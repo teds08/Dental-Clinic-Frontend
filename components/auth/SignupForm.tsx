@@ -12,7 +12,7 @@ import {
   VenusAndMars,
 } from "lucide-react";
 import { useState } from "react";
-import { genderOptions } from "@/data/auth/signup";
+import { genderOptions, initialSignupFormData } from "@/data/auth/signup";
 import { createUser } from "@/lib/api/auth";
 import type { SignupFormData, SignupFormErrors } from "@/types/auth";
 import { signupSchema } from "@/validators/auth/signup";
@@ -23,17 +23,9 @@ export function SignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<SignupFormErrors>({});
 
-  const [formData, setFormData] = useState<SignupFormData>({
-    first_name: "",
-    last_name: "",
-    email: "",
-    contact_number: "",
-    address: "",
-    date_of_birth: "",
-    gender: "",
-    password: "",
-    confirm_password: "",
-  });
+  const [formData, setFormData] = useState<SignupFormData>(
+    initialSignupFormData,
+  );
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -87,6 +79,8 @@ export function SignupForm() {
       const data = await createUser(formData);
 
       console.log("Signup successful:", data);
+      setFormData(initialSignupFormData);
+      setErrors({});
     } catch (error) {
       if (error instanceof Error) {
         setErrors({

@@ -40,3 +40,15 @@ export const genderOptions = [
     value: "Other",
   },
 ];
+
+export const initialSignupFormData = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  contact_number: "",
+  address: "",
+  date_of_birth: "",
+  gender: "",
+  password: "",
+  confirm_password: "",
+};
