@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, Smile, X } from "lucide-react";
+import { Menu, FaceGrinning, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -13,12 +13,12 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-700 text-white shadow-sm">
-            <Smile size={23} strokeWidth={1.8} />
+            <FaceGrinning size={23} strokeWidth={1.8} />
           </div>
 
           <div className="flex flex-col">
             <span className="text-base font-bold leading-tight text-gray-900">
-              Dental Clinic
+              RAFE Dental Clinic
             </span>
 
             <span className="mt-0.5 text-[9px] font-medium tracking-wide text-gray-400">
