@@ -25,3 +25,18 @@ export const signupVisualContent = {
   description:
     "Create your account and make managing your dental appointments easier.",
 };
+
+export const genderOptions = [
+  {
+    label: "Male",
+    value: "Male",
+  },
+  {
+    label: "Female",
+    value: "Female",
+  },
+  {
+    label: "Other",
+    value: "Other",
+  },
+];
