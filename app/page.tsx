@@ -9,7 +9,7 @@ import { Footer } from "@/components/landingpage/Footer";
 
 export default function Home() {
   return (
-    <main className="page-pattern">
+    <main>
       <Navbar />
       <Hero />
       <Services />

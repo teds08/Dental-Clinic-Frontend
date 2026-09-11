@@ -2,10 +2,46 @@
 
 import { Menu, FaceGrinning, X } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { navigationItems } from "@/data/landingpage/navigation";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
+
+  useEffect(() => {
+    const sections = navigationItems
+      .map((item) => document.getElementById(item.sectionId))
+      .filter((section): section is HTMLElement => section !== null);
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 140;
+
+      let currentSection = "home";
+
+      for (const section of sections) {
+        if (scrollPosition >= section.offsetTop) {
+          currentSection = section.id;
+        }
+      }
+
+      setActiveSection(currentSection);
+    };
+
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const handleNavigation = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur-md">
@@ -18,7 +54,7 @@ export function Navbar() {
 
           <div className="flex flex-col">
             <span className="text-base font-bold leading-tight text-gray-900">
-              RAFE Dental Clinic
+              Dental Clinic
             </span>
 
             <span className="mt-0.5 text-[9px] font-medium tracking-wide text-gray-400">
@@ -28,39 +64,32 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="ml-16 hidden items-center gap-8 md:flex">
-          <Link
-            href="#home"
-            className="relative py-2 text-sm font-semibold text-teal-700"
-          >
-            Home
-            <span className="absolute -bottom-1 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-teal-700" />
-          </Link>
+        <div className="mx-auto hidden items-center gap-8 md:flex">
+          {navigationItems.map((item) => {
+            const isActive = activeSection === item.sectionId;
 
-          <Link
-            href="#services"
-            className="py-2 text-sm font-medium text-gray-500 transition-colors hover:text-teal-700"
-          >
-            Services
-          </Link>
+            return (
+              <Link
+                key={item.sectionId}
+                href={item.href}
+                className={`relative py-2 text-sm transition-colors ${
+                  isActive
+                    ? "font-semibold text-teal-700"
+                    : "font-medium text-gray-500 hover:text-teal-700"
+                }`}
+              >
+                {item.label}
 
-          <Link
-            href="#about"
-            className="py-2 text-sm font-medium text-gray-500 transition-colors hover:text-teal-700"
-          >
-            About Us
-          </Link>
-
-          <Link
-            href="#contact"
-            className="py-2 text-sm font-medium text-gray-500 transition-colors hover:text-teal-700"
-          >
-            Contact
-          </Link>
+                {isActive && (
+                  <span className="absolute -bottom-1 left-1/2 h-0.5 w-4 -translate-x-1/2 rounded-full bg-teal-700" />
+                )}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Desktop Actions */}
-        <div className="ml-auto hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           <Link
             href="/login"
             className="rounded-lg px-4 py-2.5 text-sm font-semibold text-gray-600 transition-colors hover:bg-teal-50 hover:text-teal-700"
@@ -98,42 +127,29 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="border-t border-gray-100 bg-white md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col px-6 py-5">
-            <Link
-              href="#home"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg bg-teal-50 px-4 py-3 text-sm font-semibold text-teal-700"
-            >
-              Home
-            </Link>
+            {navigationItems.map((item) => {
+              const isActive = activeSection === item.sectionId;
 
-            <Link
-              href="#services"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-700"
-            >
-              Services
-            </Link>
-
-            <Link
-              href="#about"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-700"
-            >
-              About Us
-            </Link>
-
-            <Link
-              href="#contact"
-              onClick={() => setIsMenuOpen(false)}
-              className="rounded-lg px-4 py-3 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-700"
-            >
-              Contact
-            </Link>
+              return (
+                <Link
+                  key={item.sectionId}
+                  href={item.href}
+                  onClick={handleNavigation}
+                  className={`rounded-lg px-4 py-3 text-sm ${
+                    isActive
+                      ? "bg-teal-50 font-semibold text-teal-700"
+                      : "font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-teal-700"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
 
             <div className="mt-3 border-t border-gray-100 pt-4">
               <Link
                 href="/login"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleNavigation}
                 className="block rounded-lg px-4 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-50"
               >
                 Log in
@@ -141,7 +157,7 @@ export function Navbar() {
 
               <Link
                 href="/signup"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleNavigation}
                 className="mt-2 block rounded-lg bg-teal-700 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-teal-800"
               >
                 Get Started
