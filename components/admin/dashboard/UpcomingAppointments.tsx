@@ -1,51 +1,117 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+"use client";
 
-import { upcomingAppointments } from "@/data/admin/dashboard/appointments";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+import { getAdminDashboard } from "@/lib/api/admin/dashboard";
+import type { AdminDashboardAppointment } from "@/types/admin/dashboard";
 
 import { AppointmentRow } from "./AppointmentRow";
 
 export function UpcomingAppointments() {
+  const [appointments, setAppointments] = useState<AdminDashboardAppointment[]>(
+    [],
+  );
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadAppointments() {
+      try {
+        setError("");
+
+        const response = await getAdminDashboard();
+
+        setAppointments(response.data.upcoming_appointments);
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load upcoming appointments.",
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadAppointments();
+  }, []);
+
   return (
     <section className="rounded-2xl border border-gray-200 bg-white shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 sm:px-6">
+      <div className="flex items-start justify-between gap-4 p-5 sm:p-6">
         <div>
-          <h2 className="text-sm font-bold text-gray-900">
+          <h3 className="text-base font-semibold text-gray-900">
             Upcoming Appointments
-          </h2>
+          </h3>
 
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-sm text-gray-500">
             Recently scheduled patient appointments
           </p>
         </div>
 
         <Link
           href="/admin/appointments"
-          className="group flex items-center gap-1.5 text-xs font-semibold text-teal-700 transition-colors hover:text-teal-800"
+          className="shrink-0 text-xs font-semibold text-teal-700 transition-colors hover:text-teal-800"
         >
           View all
-          <ArrowRight
-            size={14}
-            strokeWidth={1.8}
-            className="transition-transform duration-200 group-hover:translate-x-0.5"
-          />
         </Link>
       </div>
 
-      {/* Appointment List */}
-      <div className="px-5 sm:px-6">
-        {upcomingAppointments.map((appointment) => (
-          <AppointmentRow
-            key={appointment.id}
-            patientName={appointment.patientName}
-            service={appointment.service}
-            date={appointment.date}
-            time={appointment.time}
-            status={appointment.status}
-          />
-        ))}
-      </div>
+      {/* Content */}
+      {isLoading ? (
+        <div className="divide-y divide-gray-100">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-4 px-5 py-4 sm:px-6"
+            >
+              <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-100" />
+
+              <div className="flex-1">
+                <div className="h-4 w-32 animate-pulse rounded bg-gray-100" />
+
+                <div className="mt-2 h-3 w-24 animate-pulse rounded bg-gray-100" />
+              </div>
+
+              <div className="hidden md:block">
+                <div className="h-3 w-28 animate-pulse rounded bg-gray-100" />
+
+                <div className="mt-2 h-3 w-20 animate-pulse rounded bg-gray-100" />
+              </div>
+
+              <div className="h-5 w-16 animate-pulse rounded-full bg-gray-100" />
+            </div>
+          ))}
+        </div>
+      ) : error ? (
+        <div className="border-t border-gray-100 px-5 py-8 text-center sm:px-6">
+          <p className="text-sm font-medium text-red-600">
+            Unable to load appointments.
+          </p>
+
+          <p className="mt-1 text-xs text-gray-400">{error}</p>
+        </div>
+      ) : appointments.length === 0 ? (
+        <div className="border-t border-gray-100 px-5 py-10 text-center sm:px-6">
+          <p className="text-sm font-medium text-gray-600">
+            No upcoming appointments
+          </p>
+
+          <p className="mt-1 text-xs text-gray-400">
+            New appointments will appear here.
+          </p>
+        </div>
+      ) : (
+        <div>
+          {appointments.map((appointment) => (
+            <AppointmentRow key={appointment.id} appointment={appointment} />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

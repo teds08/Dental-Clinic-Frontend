@@ -47,12 +47,12 @@ export function AdminDashboardLayout() {
           <br />
           <AppointmentStatusOverview />
           <br />
-          <UpcomingAppointments />
-          <br />
           <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
             <RevenueOverview />
             <QuickActions />
           </div>
+          <br />
+          <UpcomingAppointments />
         </main>
       </div>
     </div>

@@ -62,8 +62,6 @@ export function LoginForm() {
     try {
       const data = await loginUser(formData);
 
-      setAuthToken(data.token);
-
       const payload = decodeJwt(data.token);
 
       if (!payload) {
@@ -73,6 +71,8 @@ export function LoginForm() {
 
         return;
       }
+
+      setAuthToken(data.token);
 
       setFormData({
         email: "",

@@ -1,67 +1,83 @@
 import { CalendarDays, Clock3 } from "lucide-react";
 
+import type { AdminDashboardAppointment } from "@/types/admin/dashboard";
+
 interface AppointmentRowProps {
-  patientName: string;
-  service: string;
-  date: string;
-  time: string;
-  status: string;
+  appointment: AdminDashboardAppointment;
 }
 
-export function AppointmentRow({
-  patientName,
-  service,
-  date,
-  time,
-  status,
-}: AppointmentRowProps) {
-  const initials = patientName
-    .split(" ")
-    .map((name) => name[0])
-    .join("")
-    .slice(0, 2);
+function getInitials(firstName: string, lastName: string) {
+  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+}
 
-  const isPending = status === "Pending";
+function formatAppointmentDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
+function formatStatus(status: string) {
+  return status
+    .toLowerCase()
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+export function AppointmentRow({ appointment }: AppointmentRowProps) {
+  const patientName = `${appointment.first_name} ${appointment.last_name}`;
 
   return (
-    <div className="flex items-center gap-4 border-b border-gray-100 py-4 last:border-b-0">
-      {/* Avatar */}
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-xs font-semibold text-teal-700">
-        {initials}
-      </div>
-
+    <div className="flex items-center gap-4 border-t border-gray-100 px-5 py-4 transition-colors duration-200 hover:bg-gray-50 sm:px-6">
       {/* Patient */}
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-gray-900">
-          {patientName}
-        </p>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-50 text-xs font-semibold text-teal-700">
+          {getInitials(appointment.first_name, appointment.last_name)}
+        </div>
 
-        <p className="mt-0.5 truncate text-xs text-gray-500">{service}</p>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-gray-900">
+            {patientName}
+          </p>
+
+          <p className="truncate text-xs text-gray-400">
+            {appointment.service_name}
+          </p>
+        </div>
       </div>
 
       {/* Date & Time */}
-      <div className="hidden items-center gap-5 sm:flex">
+      <div className="hidden shrink-0 md:block md:w-44">
         <div className="flex items-center gap-2 text-xs text-gray-500">
           <CalendarDays size={14} strokeWidth={1.8} className="text-gray-400" />
-          {date}
+
+          <span>{formatAppointmentDate(appointment.appointment_date)}</span>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <Clock3 size={14} strokeWidth={1.8} className="text-gray-400" />
-          {time}
+        <div className="mt-1 flex items-center gap-2 text-xs text-gray-400">
+          <Clock3 size={14} strokeWidth={1.8} className="text-gray-300" />
+
+          <span>{appointment.appointment_time}</span>
         </div>
       </div>
 
       {/* Status */}
-      <span
-        className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${
-          isPending
-            ? "bg-amber-50 text-amber-600"
-            : "bg-emerald-50 text-emerald-600"
-        }`}
-      >
-        {status}
-      </span>
+      <div className="shrink-0">
+        <span
+          className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${
+            appointment.status === "APPROVED"
+              ? "bg-emerald-50 text-emerald-600"
+              : appointment.status === "PENDING"
+                ? "bg-amber-50 text-amber-600"
+                : appointment.status === "COMPLETED"
+                  ? "bg-blue-50 text-blue-600"
+                  : "bg-gray-100 text-gray-500"
+          }`}
+        >
+          {formatStatus(appointment.status)}
+        </span>
+      </div>
     </div>
   );
 }

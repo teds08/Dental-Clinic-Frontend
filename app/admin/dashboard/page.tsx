@@ -1,9 +1,9 @@
 import { AdminDashboardLayout } from "@/components/admin/dashboard/AdminDashboardLayout";
-
+import { AdminRouteGuard } from "@/components/admin/dashboard/AdminRouteGuard";
 export default function Home() {
   return (
-    <main>
+    <AdminRouteGuard>
       <AdminDashboardLayout />
-    </main>
+    </AdminRouteGuard>
   );
 }

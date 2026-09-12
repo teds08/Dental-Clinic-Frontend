@@ -13,15 +13,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { genderOptions, initialSignupFormData } from "@/data/auth/signup";
-import { createUser } from "@/lib/api/auth";
+import { createUser, setAuthToken } from "@/lib/api/auth";
 import type { SignupFormData, SignupFormErrors } from "@/types/auth/signup";
 import { signupSchema } from "@/validators/auth/signup";
+import { useRouter } from "next/navigation";
 
 export function SignupForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<SignupFormErrors>({});
+  const router = useRouter();
 
   const [formData, setFormData] = useState<SignupFormData>(
     initialSignupFormData,
@@ -78,19 +80,21 @@ export function SignupForm() {
     try {
       const data = await createUser(formData);
 
-      console.log("Signup successful:", data);
+      setAuthToken(data.data.token);
+
       setFormData(initialSignupFormData);
       setErrors({});
+
+      router.push("/dashboard");
     } catch (error) {
-      if (error instanceof Error) {
-        setErrors({
-          email: error.message,
-        });
-      } else {
-        setErrors({
-          email: "Something went wrong. Please try again.",
-        });
-      }
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to create your account. Please try again.";
+
+      setErrors({
+        email: message,
+      });
     } finally {
       setIsSubmitting(false);
     }
