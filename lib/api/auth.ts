@@ -16,15 +16,37 @@ export interface CreateUserPayload {
 const TOKEN_KEY = "rafe_auth_token";
 
 export function setAuthToken(token: string) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
   localStorage.setItem(TOKEN_KEY, token);
+  window.dispatchEvent(new Event("rafe-auth-changed"));
 }
 
 export function getAuthToken() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   return localStorage.getItem(TOKEN_KEY);
 }
 
 export function removeAuthToken() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
   localStorage.removeItem(TOKEN_KEY);
+  window.dispatchEvent(new Event("rafe-auth-changed"));
+}
+
+export function notifySessionExpired() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.dispatchEvent(new Event("rafe-session-expired"));
 }
 
 export async function createUser(formData: SignupFormData) {

@@ -1,19 +1,9 @@
-import { API_URL } from "@/lib/api";
-import { getAuthToken } from "@/lib/api/auth";
+import { apiFetch } from "@/lib/api";
 import type { AdminDashboardResponse } from "@/types/admin/dashboard";
 
 export async function getAdminDashboard(): Promise<AdminDashboardResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("Authentication token not found.");
-  }
-
-  const response = await fetch(`${API_URL}/api/data/dashboard`, {
+  const response = await apiFetch("/api/data/dashboard", {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
   });
 
   const data: AdminDashboardResponse = await response.json();

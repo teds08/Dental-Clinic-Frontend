@@ -10,12 +10,14 @@ import { UpcomingAppointments } from "./UpcomingAppointments";
 import { QuickActions } from "./QuickActions";
 import { RevenueOverview } from "./RevenueOverview";
 import { AppointmentStatusOverview } from "./AppointmentStatusOverview";
+import { SessionExpiredHandler } from "@/components/auth/SessionExpiredHandler";
 
 export function AdminDashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 section-pattern section-pattern-glow">
+      <SessionExpiredHandler />
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}

@@ -6,33 +6,41 @@ import { useRouter } from "next/navigation";
 import { SessionExpiredModal } from "@/components/auth/SessionExpiredModal";
 import { getAuthToken, removeAuthToken } from "@/lib/api/auth";
 import { decodeJwt, isTokenExpired } from "@/lib/jwt";
+import { ClientOnly } from "@/components/auth/ClientOnly";
 
 interface AdminRouteGuardProps {
   children: React.ReactNode;
 }
 
 export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
+  return (
+    <ClientOnly>
+      <AdminAuthCheck>{children}</AdminAuthCheck>
+    </ClientOnly>
+  );
+}
+
+interface AdminAuthCheckProps {
+  children: React.ReactNode;
+}
+
+function AdminAuthCheck({ children }: AdminAuthCheckProps) {
   const router = useRouter();
 
   const token = getAuthToken();
   const payload = token ? decodeJwt(token) : null;
 
-  const hasNoToken = !token;
   const isExpired = token ? isTokenExpired(token) : false;
-  const isInvalidRole = !isExpired && (!payload || payload.role_id !== 1);
+
+  const isValidAdmin = payload !== null && payload.role_id === 1 && !isExpired;
 
   useEffect(() => {
-    if (hasNoToken || isInvalidRole) {
+    if (!token || (!isExpired && !isValidAdmin)) {
       router.replace("/login");
     }
-  }, [hasNoToken, isInvalidRole, router]);
+  }, [token, isExpired, isValidAdmin, router]);
 
-  function handleLogin() {
-    removeAuthToken();
-    router.replace("/login");
-  }
-
-  if (hasNoToken || isInvalidRole) {
+  if (!token || (!isExpired && !isValidAdmin)) {
     return null;
   }
 
@@ -41,7 +49,13 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
       <>
         {children}
 
-        <SessionExpiredModal isOpen={true} onLogin={handleLogin} />
+        <SessionExpiredModal
+          isOpen={true}
+          onLogin={() => {
+            removeAuthToken();
+            router.replace("/login");
+          }}
+        />
       </>
     );
   }

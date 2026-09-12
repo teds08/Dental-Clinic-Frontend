@@ -23,14 +23,14 @@ export function SessionExpiredModal({
         aria-labelledby="session-expired-title"
         className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl sm:p-7"
       >
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+        <div className=" mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
           <ShieldAlert size={24} strokeWidth={1.8} />
         </div>
 
         <div className="mt-5">
           <h2
             id="session-expired-title"
-            className="text-xl font-bold tracking-tight text-gray-900"
+            className="mx-auto text-center text-xl font-bold tracking-tight text-gray-900"
           >
             Session Expired
           </h2>
