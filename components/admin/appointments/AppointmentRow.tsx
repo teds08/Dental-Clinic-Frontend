@@ -22,11 +22,13 @@ import { RejectAppointmentDialog } from "./RejectAppointmentDialog";
 interface AppointmentRowProps {
   appointment: AdminDashboardAppointment;
   onStatusChange?: (appointmentId: number, status: string) => void;
+  onClick?: () => void;
 }
 
 export function AppointmentRow({
   appointment,
   onStatusChange,
+  onClick,
 }: AppointmentRowProps) {
   const [status, setStatus] = useState(appointment.status);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -69,7 +71,18 @@ export function AppointmentRow({
 
   return (
     <>
-      <div className="border-t border-gray-100 px-5 py-4 transition-colors duration-200 hover:bg-gray-50 sm:px-6">
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onClick?.();
+          }
+        }}
+        className="cursor-pointer border-t border-gray-100 px-5 py-4 transition-colors duration-200 hover:bg-gray-50 sm:px-6"
+      >
         <div className="flex items-center gap-4">
           {/* Patient */}
           <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -108,7 +121,11 @@ export function AppointmentRow({
           </div>
 
           {/* Status / Actions */}
-          <div className="flex shrink-0 items-center gap-2">
+          <div
+            className="flex shrink-0 items-center gap-2"
+            onClick={(event) => event.stopPropagation()}
+            onKeyDown={(event) => event.stopPropagation()}
+          >
             {status === "PENDING" ? (
               <>
                 {/* Approve */}

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
 import { AdminOverview } from "./AdminOverview";
-import { UpcomingAppointments } from "./UpcomingAppointments";
+import { UpcomingAppointments } from "../appointments/UpcomingAppointments";
 import { QuickActions } from "./QuickActions";
 import { RevenueOverview } from "./RevenueOverview";
 import { AppointmentStatusOverview } from "./AppointmentStatusOverview";
