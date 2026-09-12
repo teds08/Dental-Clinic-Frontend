@@ -12,9 +12,7 @@ export function UpcomingAppointments() {
   const [appointments, setAppointments] = useState<AdminDashboardAppointment[]>(
     [],
   );
-
   const [isLoading, setIsLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -39,6 +37,19 @@ export function UpcomingAppointments() {
     loadAppointments();
   }, []);
 
+  function handleStatusChange(appointmentId: number, status: string) {
+    setAppointments((currentAppointments) =>
+      currentAppointments.map((appointment) =>
+        appointment.id === appointmentId
+          ? {
+              ...appointment,
+              status,
+            }
+          : appointment,
+      ),
+    );
+  }
+
   return (
     <section className="rounded-2xl border border-gray-200 bg-white shadow-sm">
       {/* Header */}
@@ -61,54 +72,67 @@ export function UpcomingAppointments() {
         </Link>
       </div>
 
-      {/* Content */}
-      {isLoading ? (
-        <div className="divide-y divide-gray-100">
+      {/* Loading */}
+      {isLoading && (
+        <div className="space-y-0">
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="flex items-center gap-4 px-5 py-4 sm:px-6"
+              className="flex items-center gap-4 border-t border-gray-100 px-5 py-4 sm:px-6"
             >
               <div className="h-10 w-10 shrink-0 animate-pulse rounded-full bg-gray-100" />
 
-              <div className="flex-1">
-                <div className="h-4 w-32 animate-pulse rounded bg-gray-100" />
+              <div className="min-w-0 flex-1">
+                <div className="h-3.5 w-32 animate-pulse rounded bg-gray-100" />
 
                 <div className="mt-2 h-3 w-24 animate-pulse rounded bg-gray-100" />
               </div>
 
-              <div className="hidden md:block">
-                <div className="h-3 w-28 animate-pulse rounded bg-gray-100" />
+              <div className="hidden md:block md:w-44">
+                <div className="h-3 w-24 animate-pulse rounded bg-gray-100" />
 
-                <div className="mt-2 h-3 w-20 animate-pulse rounded bg-gray-100" />
+                <div className="mt-2 h-3 w-16 animate-pulse rounded bg-gray-100" />
               </div>
 
-              <div className="h-5 w-16 animate-pulse rounded-full bg-gray-100" />
+              <div className="h-6 w-20 animate-pulse rounded-full bg-gray-100" />
             </div>
           ))}
         </div>
-      ) : error ? (
-        <div className="border-t border-gray-100 px-5 py-8 text-center sm:px-6">
-          <p className="text-sm font-medium text-red-600">
-            Unable to load appointments.
-          </p>
+      )}
 
-          <p className="mt-1 text-xs text-gray-400">{error}</p>
+      {/* Error */}
+      {!isLoading && error && (
+        <div className="border-t border-gray-100 px-5 py-8 text-center sm:px-6">
+          <p className="text-sm font-medium text-red-500">{error}</p>
+
+          <p className="mt-1 text-xs text-gray-400">
+            Please try refreshing the page.
+          </p>
         </div>
-      ) : appointments.length === 0 ? (
+      )}
+
+      {/* Empty */}
+      {!isLoading && !error && appointments.length === 0 && (
         <div className="border-t border-gray-100 px-5 py-10 text-center sm:px-6">
           <p className="text-sm font-medium text-gray-600">
             No upcoming appointments
           </p>
 
           <p className="mt-1 text-xs text-gray-400">
-            New appointments will appear here.
+            Newly scheduled appointments will appear here.
           </p>
         </div>
-      ) : (
+      )}
+
+      {/* Appointments */}
+      {!isLoading && !error && appointments.length > 0 && (
         <div>
           {appointments.map((appointment) => (
-            <AppointmentRow key={appointment.id} appointment={appointment} />
+            <AppointmentRow
+              key={appointment.id}
+              appointment={appointment}
+              onStatusChange={handleStatusChange}
+            />
           ))}
         </div>
       )}
