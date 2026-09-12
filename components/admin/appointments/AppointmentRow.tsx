@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, Check, Clock3, X } from "lucide-react";
+import { CalendarDays, Check, Clock3, MoreHorizontal, X } from "lucide-react";
 
 import {
   approveAppointment,
@@ -34,6 +34,7 @@ export function AppointmentRow({
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState("");
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const patientName = `${appointment.first_name} ${appointment.last_name}`;
 
@@ -41,6 +42,7 @@ export function AppointmentRow({
     try {
       setIsUpdating(true);
       setError("");
+      setIsMenuOpen(false);
 
       const response =
         action === "approve"
@@ -67,6 +69,21 @@ export function AppointmentRow({
 
   function handleReject() {
     return updateAppointmentStatus("reject");
+  }
+
+  function handleMenuToggle(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    setIsMenuOpen((current) => !current);
+  }
+
+  function handleViewDetails() {
+    setIsMenuOpen(false);
+    onClick?.();
+  }
+
+  function handleOpenReject() {
+    setIsMenuOpen(false);
+    setIsRejectDialogOpen(true);
   }
 
   return (
@@ -122,44 +139,75 @@ export function AppointmentRow({
 
           {/* Status / Actions */}
           <div
-            className="flex shrink-0 items-center gap-2"
+            className="relative flex shrink-0 items-center gap-2"
             onClick={(event) => event.stopPropagation()}
             onKeyDown={(event) => event.stopPropagation()}
           >
-            {status === "PENDING" ? (
-              <>
-                {/* Approve */}
-                <button
-                  type="button"
-                  onClick={handleApprove}
-                  disabled={isUpdating}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-teal-600 px-3 text-[11px] font-semibold text-white transition-colors hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Check size={14} strokeWidth={2.2} />
+            {/* Status */}
+            <span
+              className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${getStatusClasses(
+                status,
+              )}`}
+            >
+              {formatStatus(status)}
+            </span>
 
-                  {isUpdating ? "Updating..." : "Approve"}
-                </button>
-
-                {/* Reject */}
-                <button
-                  type="button"
-                  onClick={() => setIsRejectDialogOpen(true)}
-                  disabled={isUpdating}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 text-[11px] font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <X size={14} strokeWidth={2.2} />
-                  Reject
-                </button>
-              </>
-            ) : (
-              <span
-                className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${getStatusClasses(
-                  status,
-                )}`}
+            {/* Ellipsis */}
+            <div className="relative">
+              <button
+                type="button"
+                aria-label="Appointment actions"
+                aria-expanded={isMenuOpen}
+                onClick={handleMenuToggle}
+                disabled={isUpdating}
+                className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {formatStatus(status)}
-              </span>
-            )}
+                <MoreHorizontal size={18} strokeWidth={2} />
+              </button>
+
+              {isMenuOpen && (
+                <div
+                  className="absolute right-0 top-10 z-30 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
+                  onClick={(event) => event.stopPropagation()}
+                  onKeyDown={(event) => event.stopPropagation()}
+                >
+                  {/* View Details */}
+                  <button
+                    type="button"
+                    onClick={handleViewDetails}
+                    className="cursor-pointer flex w-full items-center rounded-lg px-3 py-2.5 text-left text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                  >
+                    View Details
+                  </button>
+
+                  {/* Pending Actions */}
+                  {status === "PENDING" && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleApprove}
+                        disabled={isUpdating}
+                        className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-teal-700 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Check size={15} strokeWidth={2} />
+
+                        {isUpdating ? "Approving..." : "Approve"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleOpenReject}
+                        disabled={isUpdating}
+                        className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <X size={15} strokeWidth={2} />
+                        Reject
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -176,7 +224,11 @@ export function AppointmentRow({
         isOpen={isRejectDialogOpen}
         patientName={patientName}
         isLoading={isUpdating}
-        onCancel={() => setIsRejectDialogOpen(false)}
+        onCancel={() => {
+          if (!isUpdating) {
+            setIsRejectDialogOpen(false);
+          }
+        }}
         onConfirm={async () => {
           setIsRejectDialogOpen(false);
           await handleReject();

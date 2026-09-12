@@ -265,7 +265,7 @@ export function AppointmentDetailsDialog({
           <button
             type="button"
             onClick={onClose}
-            className="h-10 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+            className="cursor-pointer h-10 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
           >
             Close
           </button>
