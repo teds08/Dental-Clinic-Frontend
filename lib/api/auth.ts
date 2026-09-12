@@ -1,5 +1,31 @@
 import { API_URL } from "@/lib/api";
-import type { SignupFormData } from "@/types/auth";
+import type { LoginFormData } from "@/types/auth/login";
+import type { SignupFormData } from "@/types/auth/signup";
+
+export interface CreateUserPayload {
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  contact_number: string;
+  date_of_birth: string;
+  address: string;
+  gender: string;
+}
+
+const TOKEN_KEY = "rafe_auth_token";
+
+export function setAuthToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function getAuthToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function removeAuthToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
 
 export async function createUser(formData: SignupFormData) {
   const payload = {
@@ -25,6 +51,26 @@ export async function createUser(formData: SignupFormData) {
 
   if (!response.ok) {
     throw new Error(data.message || "Unable to create your account.");
+  }
+
+  return data;
+}
+
+export async function loginUser(formData: LoginFormData) {
+  const response = await fetch(`${API_URL}/api/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      data.message || "Unable to log in. Please check your credentials.",
+    );
   }
 
   return data;

@@ -1,5 +1,5 @@
-import { SignupContainer } from "@/components/auth/SignupContainer";
-import { SignupVisual } from "@/components/auth/SignupVisual";
+import { SignupContainer } from "@/components/signup/SignupContainer";
+import { SignupVisual } from "@/components/signup/SignupVisual";
 
 export default function SignupPage() {
   return (

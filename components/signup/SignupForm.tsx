@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 import { genderOptions, initialSignupFormData } from "@/data/auth/signup";
 import { createUser } from "@/lib/api/auth";
-import type { SignupFormData, SignupFormErrors } from "@/types/auth";
+import type { SignupFormData, SignupFormErrors } from "@/types/auth/signup";
 import { signupSchema } from "@/validators/auth/signup";
 
 export function SignupForm() {
