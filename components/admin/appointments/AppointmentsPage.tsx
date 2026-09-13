@@ -4,7 +4,11 @@ import { RefreshCw } from "lucide-react";
 import { useState } from "react";
 
 import { useAdminAppointments } from "@/hooks/admin/useAdminAppointments";
-import { getAppointmentById } from "@/lib/api/admin/appointments";
+import {
+  approveAppointment,
+  getAppointmentById,
+  rejectAppointment,
+} from "@/lib/api/admin/appointments";
 
 import type { AdminAppointmentDetails } from "@/types/admin/appointments";
 
@@ -37,9 +41,14 @@ export function AppointmentsPage() {
 
   const [detailsError, setDetailsError] = useState("");
 
+  const [isActionLoading, setIsActionLoading] = useState(false);
+
+  const [actionError, setActionError] = useState("");
+
   async function handleAppointmentClick(appointmentId: number) {
     try {
       setDetailsError("");
+      setActionError("");
       setIsDetailsLoading(true);
       setSelectedAppointment(null);
 
@@ -58,8 +67,67 @@ export function AppointmentsPage() {
   }
 
   function handleCloseDetails() {
+    if (isActionLoading) return;
+
     setSelectedAppointment(null);
     setDetailsError("");
+    setActionError("");
+  }
+
+  async function handleApprove(appointmentId: number) {
+    try {
+      setActionError("");
+      setIsActionLoading(true);
+
+      await approveAppointment(appointmentId);
+
+      handleStatusChange();
+
+      setSelectedAppointment((current) =>
+        current?.id === appointmentId
+          ? {
+              ...current,
+              status: "APPROVED",
+            }
+          : current,
+      );
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to approve appointment.",
+      );
+    } finally {
+      setIsActionLoading(false);
+    }
+  }
+
+  async function handleReject(appointmentId: number) {
+    try {
+      setActionError("");
+      setIsActionLoading(true);
+
+      await rejectAppointment(appointmentId);
+
+      handleStatusChange();
+
+      setSelectedAppointment((current) =>
+        current?.id === appointmentId
+          ? {
+              ...current,
+              status: "REJECTED",
+            }
+          : current,
+      );
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to reject appointment.",
+      );
+    } finally {
+      setIsActionLoading(false);
+    }
   }
 
   return (
@@ -192,8 +260,15 @@ export function AppointmentsPage() {
           detailsError !== ""
         }
         isLoading={isDetailsLoading}
-        error={detailsError}
+        error={
+          actionError
+            ? `${detailsError}${detailsError ? "\n\n" : ""}${actionError}`
+            : detailsError
+        }
+        isActionLoading={isActionLoading}
         onClose={handleCloseDetails}
+        onApprove={handleApprove}
+        onReject={handleReject}
       />
     </>
   );

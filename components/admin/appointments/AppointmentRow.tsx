@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { CalendarDays, Check, Clock3, MoreHorizontal, X } from "lucide-react";
 
 import {
@@ -30,7 +31,6 @@ export function AppointmentRow({
   onStatusChange,
   onClick,
 }: AppointmentRowProps) {
-  const [status, setStatus] = useState(appointment.status);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState("");
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false);
@@ -48,8 +48,6 @@ export function AppointmentRow({
         action === "approve"
           ? await approveAppointment(appointment.id)
           : await rejectAppointment(appointment.id);
-
-      setStatus(response.data.status);
 
       onStatusChange?.(appointment.id, response.data.status);
     } catch (error) {
@@ -146,10 +144,10 @@ export function AppointmentRow({
             {/* Status */}
             <span
               className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${getStatusClasses(
-                status,
+                appointment.status,
               )}`}
             >
-              {formatStatus(status)}
+              {formatStatus(appointment.status)}
             </span>
 
             {/* Ellipsis */}
@@ -181,7 +179,7 @@ export function AppointmentRow({
                   </button>
 
                   {/* Pending Actions */}
-                  {status === "PENDING" && (
+                  {appointment.status === "PENDING" && (
                     <>
                       <button
                         type="button"

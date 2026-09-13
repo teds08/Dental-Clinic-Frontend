@@ -3,11 +3,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+import {
+  approveAppointment,
+  getAppointmentById,
+  rejectAppointment,
+} from "@/lib/api/admin/appointments";
 import { getAdminDashboard } from "@/lib/api/admin/dashboard";
-import { getAppointmentById } from "@/lib/api/admin/appointments";
 
-import type { AdminDashboardAppointment } from "@/types/admin/dashboard";
 import type { AdminAppointmentDetails } from "@/types/admin/appointments";
+import type { AdminDashboardAppointment } from "@/types/admin/dashboard";
 
 import { AppointmentDetailsDialog } from "./AppointmentDetailsDialog";
 import { AppointmentRow } from "./AppointmentRow";
@@ -21,11 +25,23 @@ export function UpcomingAppointments() {
     useState<AdminAppointmentDetails | null>(null);
 
   const [isDetailsLoading, setIsDetailsLoading] = useState(false);
-
   const [detailsError, setDetailsError] = useState("");
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [actionError, setActionError] = useState("");
+
+  async function refreshAppointments() {
+    try {
+      const response = await getAdminDashboard();
+
+      setAppointments(response.data.upcoming_appointments);
+    } catch (error) {
+      console.error("Unable to refresh upcoming appointments:", error);
+    }
+  }
 
   useEffect(() => {
     async function loadAppointments() {
@@ -46,7 +62,7 @@ export function UpcomingAppointments() {
       }
     }
 
-    loadAppointments();
+    void loadAppointments();
   }, []);
 
   function handleStatusChange(appointmentId: number, status: string) {
@@ -73,11 +89,58 @@ export function UpcomingAppointments() {
     });
   }
 
+  async function handleApprove(appointmentId: number) {
+    try {
+      setActionError("");
+      setIsActionLoading(true);
+
+      await approveAppointment(appointmentId);
+
+      // Immediately update the selected appointment.
+      handleStatusChange(appointmentId, "APPROVED");
+
+      // Refresh the dashboard list from the backend.
+      await refreshAppointments();
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to approve appointment.",
+      );
+    } finally {
+      setIsActionLoading(false);
+    }
+  }
+
+  async function handleReject(appointmentId: number) {
+    try {
+      setActionError("");
+      setIsActionLoading(true);
+
+      await rejectAppointment(appointmentId);
+
+      // Immediately update the selected appointment.
+      handleStatusChange(appointmentId, "REJECTED");
+
+      // Refresh the dashboard list from the backend.
+      await refreshAppointments();
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Unable to reject appointment.",
+      );
+    } finally {
+      setIsActionLoading(false);
+    }
+  }
+
   async function handleAppointmentClick(
     appointment: AdminDashboardAppointment,
   ) {
     try {
       setDetailsError("");
+      setActionError("");
       setIsDetailsLoading(true);
       setSelectedAppointment(null);
 
@@ -98,6 +161,7 @@ export function UpcomingAppointments() {
   function handleCloseDetails() {
     setSelectedAppointment(null);
     setDetailsError("");
+    setActionError("");
   }
 
   return (
@@ -199,8 +263,15 @@ export function UpcomingAppointments() {
           detailsError !== ""
         }
         isLoading={isDetailsLoading}
-        error={detailsError}
+        error={
+          actionError
+            ? `${detailsError}${detailsError ? "\n\n" : ""}${actionError}`
+            : detailsError
+        }
+        isActionLoading={isActionLoading}
         onClose={handleCloseDetails}
+        onApprove={handleApprove}
+        onReject={handleReject}
       />
     </>
   );

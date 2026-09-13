@@ -8,7 +8,10 @@ import {
 } from "lucide-react";
 
 import { useEffect, useState } from "react";
+
+import { useAdminProfile } from "@/hooks/admin/useAdminProfile";
 import { getAdminDashboard } from "@/lib/api/admin/dashboard";
+
 import { AdminStatCard } from "./AdminStatCard";
 
 interface DashboardMetrics {
@@ -23,6 +26,10 @@ export function AdminOverview() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const { profile } = useAdminProfile();
+
+  const adminName = profile?.first_name || profile?.last_name || "Admin";
 
   useEffect(() => {
     async function loadDashboard() {
@@ -48,7 +55,7 @@ export function AdminOverview() {
       }
     }
 
-    loadDashboard();
+    void loadDashboard();
   }, []);
 
   if (isLoading) {
@@ -60,7 +67,7 @@ export function AdminOverview() {
           </p>
 
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Good morning, Admin
+            Good morning, {adminName}
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-gray-500">
@@ -95,7 +102,7 @@ export function AdminOverview() {
           </p>
 
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-            Good morning, Admin
+            Good morning, {adminName}
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-gray-500">
@@ -126,7 +133,7 @@ export function AdminOverview() {
         </p>
 
         <h2 className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          Good morning, Admin
+          Good morning, {adminName}
         </h2>
 
         <p className="mt-2 text-sm leading-6 text-gray-500">

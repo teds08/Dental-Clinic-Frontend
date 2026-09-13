@@ -23,7 +23,10 @@ interface AppointmentDetailsDialogProps {
   isOpen: boolean;
   isLoading: boolean;
   error: string;
+  isActionLoading: boolean;
   onClose: () => void;
+  onApprove: (appointmentId: number) => void;
+  onReject: (appointmentId: number) => void;
 }
 
 export function AppointmentDetailsDialog({
@@ -31,11 +34,16 @@ export function AppointmentDetailsDialog({
   isOpen,
   isLoading,
   error,
+  isActionLoading,
   onClose,
+  onApprove,
+  onReject,
 }: AppointmentDetailsDialogProps) {
   if (!isOpen) {
     return null;
   }
+
+  const isPending = appointment?.status === "PENDING";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5 py-6 backdrop-blur-sm">
@@ -66,7 +74,7 @@ export function AppointmentDetailsDialog({
             type="button"
             onClick={onClose}
             aria-label="Close appointment details"
-            className="cursor-pointer flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            className="flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
           >
             <X size={19} strokeWidth={1.8} />
           </button>
@@ -103,7 +111,9 @@ export function AppointmentDetailsDialog({
               Unable to load appointment
             </p>
 
-            <p className="mt-1 text-sm text-gray-500">{error}</p>
+            <p className="mt-1 whitespace-pre-line text-sm text-gray-500">
+              {error}
+            </p>
           </div>
         )}
 
@@ -130,7 +140,6 @@ export function AppointmentDetailsDialog({
 
                   <span className="flex items-center gap-1.5">
                     <Phone size={13} strokeWidth={1.8} />
-
                     {appointment.contact_number}
                   </span>
                 </div>
@@ -156,7 +165,6 @@ export function AppointmentDetailsDialog({
                 <div className="rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Stethoscope size={16} strokeWidth={1.8} />
-
                     <span className="text-xs">Service</span>
                   </div>
 
@@ -169,7 +177,6 @@ export function AppointmentDetailsDialog({
                 <div className="rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <CalendarDays size={16} strokeWidth={1.8} />
-
                     <span className="text-xs">Date</span>
                   </div>
 
@@ -182,7 +189,6 @@ export function AppointmentDetailsDialog({
                 <div className="rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Clock3 size={16} strokeWidth={1.8} />
-
                     <span className="text-xs">Time</span>
                   </div>
 
@@ -195,7 +201,6 @@ export function AppointmentDetailsDialog({
                 <div className="rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Clock3 size={16} strokeWidth={1.8} />
-
                     <span className="text-xs">Duration</span>
                   </div>
 
@@ -208,7 +213,6 @@ export function AppointmentDetailsDialog({
                 <div className="rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Coins size={16} strokeWidth={1.8} />
-
                     <span className="text-xs">Service Price</span>
                   </div>
 
@@ -221,7 +225,6 @@ export function AppointmentDetailsDialog({
                 <div className="rounded-xl border border-gray-100 p-4">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Coins size={16} strokeWidth={1.8} />
-
                     <span className="text-xs">Points</span>
                   </div>
 
@@ -262,10 +265,33 @@ export function AppointmentDetailsDialog({
 
         {/* Footer */}
         <div className="border-t border-gray-100 px-6 py-4">
+          {/* Actions */}
+          {isPending && (
+            <div className="mx-auto flex w-full max-w-md gap-3">
+              <button
+                type="button"
+                onClick={() => onReject(appointment.id)}
+                disabled={isActionLoading}
+                className="h-10 w-full cursor-pointer rounded-xl border border-red-200 bg-white px-4 text-sm font-semibold text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Reject
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onApprove(appointment.id)}
+                disabled={isActionLoading}
+                className="h-10 w-full cursor-pointer rounded-xl border border-teal-200 bg-white px-4 text-sm font-semibold text-teal-600 transition-colors hover:bg-teal-50 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Approve
+              </button>
+            </div>
+          )}
+          <br />
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer h-10 w-full rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
+            className="h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50"
           >
             Close
           </button>
