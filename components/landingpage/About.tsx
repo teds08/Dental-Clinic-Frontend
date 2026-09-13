@@ -5,23 +5,22 @@ import { aboutFeatures } from "@/data/landingpage/about";
 
 export function About() {
   return (
-    <section
-      id="about"
-      className="section-pattern section-pattern-glow px-6 py-20 lg:px-8 lg:py-24"
-    >
+    <section id="about" className="px-6 py-20 lg:px-8 lg:py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2 lg:gap-20">
         {/* Image */}
         <div className="relative mx-auto w-full max-w-lg lg:mx-0">
           <div className="absolute -bottom-5 -left-5 h-full w-full rounded-[2rem] bg-teal-50" />
 
           <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] bg-gray-100 shadow-lg">
-            <Image
-              src="/service6.png"
-              alt="Dental clinic professional care"
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-            />
+            <div className="relative h-full min-h-[400px] overflow-hidden rounded-3xl">
+              <Image
+                src="/service6.png"
+                alt="Dental clinic professional care"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+              />
+            </div>
           </div>
 
           {/* Experience Card */}
