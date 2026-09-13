@@ -24,7 +24,6 @@ interface AppointmentListProps {
   onAppointmentClick?: (appointment: AdminAppointment) => void;
   onStatusChange?: () => void;
 }
-
 export function AppointmentList({
   appointments,
   onAppointmentClick,
@@ -106,7 +105,7 @@ export function AppointmentList({
 
   return (
     <>
-      <div className="overflow-hidden">
+      <div>
         {/* Desktop Header */}
         <div className="hidden border-b border-gray-100 bg-gray-50 px-6 py-3 md:grid md:grid-cols-[1.35fr_1.15fr_1fr_0.9fr_0.8fr_0.5fr] md:items-center md:gap-4">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
@@ -241,14 +240,14 @@ export function AppointmentList({
                     aria-label="Appointment actions"
                     aria-expanded={isMenuOpen}
                     onClick={(event) => handleMenuToggle(event, appointment.id)}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                    className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                   >
                     <MoreHorizontal size={19} strokeWidth={2} />
                   </button>
 
                   {isMenuOpen && (
                     <div
-                      className="absolute right-0 top-10 z-20 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
+                      className="absolute right-0 top-10 z-20 w-44 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
                       onClick={(event) => event.stopPropagation()}
                     >
                       <button
@@ -257,7 +256,7 @@ export function AppointmentList({
                           setOpenMenuId(null);
                           onAppointmentClick?.(appointment);
                         }}
-                        className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                        className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
                       >
                         View Details
                       </button>
@@ -271,7 +270,7 @@ export function AppointmentList({
                               isThisAppointmentApproving ||
                               isThisAppointmentRejecting
                             }
-                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-teal-700 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-teal-700 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <Check size={15} strokeWidth={2} />
 
@@ -287,7 +286,7 @@ export function AppointmentList({
                               isThisAppointmentApproving ||
                               isThisAppointmentRejecting
                             }
-                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <X size={15} strokeWidth={2} />
                             Reject
@@ -337,7 +336,7 @@ export function AppointmentList({
 
                         {isMenuOpen && (
                           <div
-                            className="absolute right-0 top-9 z-20 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
+                            className="absolute right-0 top-9 z-20 w-44 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
                             onClick={(event) => event.stopPropagation()}
                           >
                             <button

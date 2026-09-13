@@ -7,16 +7,20 @@ import type {
 } from "@/types/admin/appointments";
 
 export async function getAdminAppointments(
+  search?: string,
   status?: string,
   page = 1,
   limit = 10,
 ): Promise<AdminAppointmentsResponse> {
   const params = new URLSearchParams();
 
+  if (search) {
+    params.set("search", search);
+  }
+
   if (status) {
     params.set("status", status);
   }
-
   params.set("page", String(page));
   params.set("limit", String(limit));
 

@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, Search } from "lucide-react";
+import { Bell, ChevronDown } from "lucide-react";
 
 export function AdminHeader() {
   return (
@@ -14,15 +14,6 @@ export function AdminHeader() {
 
       {/* Right */}
       <div className="flex items-center gap-5">
-        {/* Search */}
-        <button
-          type="button"
-          aria-label="Search"
-          className="flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
-        >
-          <Search size={19} strokeWidth={1.8} />
-        </button>
-
         {/* Notifications */}
         <button
           type="button"

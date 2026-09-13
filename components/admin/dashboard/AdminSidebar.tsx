@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FaceGrinning, LogOut } from "lucide-react";
+import { X } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { adminNavigation } from "@/data/admin/dashboard/navigation";
 
@@ -11,6 +12,8 @@ interface AdminSidebarProps {
 }
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
+  const pathname = usePathname();
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -19,61 +22,73 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           type="button"
           aria-label="Close sidebar"
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/20 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
         />
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300 ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         {/* Brand */}
-        <div className="flex h-20 shrink-0 items-center border-b border-gray-100 px-6">
+        <div className="flex h-16 shrink-0 items-center justify-between border-b border-gray-100 px-5">
           <Link
             href="/admin/dashboard"
             onClick={onClose}
             className="flex items-center gap-3"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-700 text-white shadow-sm">
-              <FaceGrinning size={22} strokeWidth={1.8} />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-700 text-sm font-bold text-white">
+              R
             </div>
 
-            <div className="flex flex-col">
-              <span className="text-sm font-bold leading-tight text-gray-900">
-                RAFE Dental Clinic
-              </span>
+            <div>
+              <p className="text-sm font-bold tracking-tight text-gray-900">
+                RAFE Dental
+              </p>
 
-              <span className="mt-0.5 text-[9px] font-medium tracking-wide text-gray-400">
-                Admin Portal
-              </span>
+              <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                Admin Panel
+              </p>
             </div>
           </Link>
+
+          {/* Mobile Close */}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close sidebar"
+            className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 lg:hidden"
+          >
+            <X size={19} strokeWidth={1.8} />
+          </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-4 py-6">
-          <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">
+        <nav className="flex-1 overflow-y-auto px-3 py-5">
+          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
             Management
           </p>
 
           <div className="space-y-1">
             {adminNavigation.map((item) => {
               const Icon = item.icon;
-              const isActive = item.href === "/admin/dashboard";
+
+              const isActive = pathname === item.href;
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
-                  className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
                     isActive
-                      ? "bg-teal-50 text-teal-700 shadow-sm"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-teal-50 text-teal-700"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
                   }`}
                 >
-                  <Icon size={18} strokeWidth={1.8} className="shrink-0" />
+                  <Icon size={18} strokeWidth={isActive ? 2 : 1.8} />
 
                   <span>{item.label}</span>
                 </Link>
@@ -82,20 +97,17 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
         </nav>
 
-        {/* Logout */}
+        {/* Footer */}
         <div className="shrink-0 border-t border-gray-100 p-4">
-          <button
-            type="button"
-            className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
-          >
-            <LogOut
-              size={18}
-              strokeWidth={1.8}
-              className="transition-transform duration-200 group-hover:-translate-x-0.5"
-            />
+          <div className="rounded-xl bg-gray-50 px-3 py-3">
+            <p className="text-xs font-semibold text-gray-700">
+              RAFE Dental Clinic
+            </p>
 
-            <span>Log out</span>
-          </button>
+            <p className="mt-0.5 text-[10px] text-gray-400">
+              Administration Portal
+            </p>
+          </div>
         </div>
       </aside>
     </>

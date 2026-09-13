@@ -66,7 +66,7 @@ export function AppointmentDetailsDialog({
             type="button"
             onClick={onClose}
             aria-label="Close appointment details"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            className="cursor-pointer flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
           >
             <X size={19} strokeWidth={1.8} />
           </button>

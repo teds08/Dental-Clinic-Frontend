@@ -3,21 +3,22 @@
 import { Menu } from "lucide-react";
 import { useState } from "react";
 
-import { AdminSidebar } from "./AdminSidebar";
-import { AdminHeader } from "./AdminHeader";
-import { AdminOverview } from "./AdminOverview";
-import { UpcomingAppointments } from "../appointments/UpcomingAppointments";
-import { QuickActions } from "./QuickActions";
-import { RevenueOverview } from "./RevenueOverview";
-import { AppointmentStatusOverview } from "./AppointmentStatusOverview";
 import { SessionExpiredHandler } from "@/components/auth/SessionExpiredHandler";
 
-export function AdminDashboardLayout() {
+import { AdminSidebar } from "./AdminSidebar";
+import { AdminHeader } from "./AdminHeader";
+
+interface AdminDashboardLayoutProps {
+  children: React.ReactNode;
+}
+
+export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 section-pattern section-pattern-glow">
       <SessionExpiredHandler />
+
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -43,19 +44,8 @@ export function AdminDashboardLayout() {
 
         <AdminHeader />
 
-        {/* Dashboard Content */}
-        <main className="p-5 sm:p-7 lg:p-8">
-          <AdminOverview />
-          <br />
-          <AppointmentStatusOverview />
-          <br />
-          <div className="grid gap-6 xl:grid-cols-[1.6fr_1fr]">
-            <RevenueOverview />
-            <QuickActions />
-          </div>
-          <br />
-          <UpcomingAppointments />
-        </main>
+        {/* Page Content */}
+        <main className="p-5 sm:p-7 lg:p-8">{children}</main>
       </div>
     </div>
   );

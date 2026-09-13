@@ -160,14 +160,14 @@ export function AppointmentRow({
                 aria-expanded={isMenuOpen}
                 onClick={handleMenuToggle}
                 disabled={isUpdating}
-                className="cursor-pointer flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <MoreHorizontal size={18} strokeWidth={2} />
               </button>
 
               {isMenuOpen && (
                 <div
-                  className="absolute right-0 top-10 z-30 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
+                  className="absolute bottom-10 right-0 z-50 w-44 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg"
                   onClick={(event) => event.stopPropagation()}
                   onKeyDown={(event) => event.stopPropagation()}
                 >
@@ -175,7 +175,7 @@ export function AppointmentRow({
                   <button
                     type="button"
                     onClick={handleViewDetails}
-                    className="cursor-pointer flex w-full items-center rounded-lg px-3 py-2.5 text-left text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                    className="flex w-full cursor-pointer items-center rounded-lg px-3 py-2.5 text-left text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
                   >
                     View Details
                   </button>
@@ -187,7 +187,7 @@ export function AppointmentRow({
                         type="button"
                         onClick={handleApprove}
                         disabled={isUpdating}
-                        className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-teal-700 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-teal-700 transition-colors hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <Check size={15} strokeWidth={2} />
 
@@ -198,7 +198,7 @@ export function AppointmentRow({
                         type="button"
                         onClick={handleOpenReject}
                         disabled={isUpdating}
-                        className="cursor-pointer flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <X size={15} strokeWidth={2} />
                         Reject
