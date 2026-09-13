@@ -1,13 +1,12 @@
 "use client";
 
 import { AlertTriangle, Archive, RotateCcw, Trash2, X } from "lucide-react";
-
-import type { DummyService } from "@/data/admin/services/services";
+import type { AdminService } from "@/types/admin/services";
 
 type ServiceAction = "archive" | "restore" | "delete";
 
 interface ServiceActionDialogProps {
-  service: DummyService | null;
+  service: AdminService | null;
   action: ServiceAction | null;
   isOpen: boolean;
   isLoading?: boolean;

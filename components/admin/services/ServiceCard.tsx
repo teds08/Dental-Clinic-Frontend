@@ -4,15 +4,15 @@ import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
-import type { DummyService } from "@/data/admin/services/services";
+import type { AdminService } from "@/types/admin/services";
 
 interface ServiceCardProps {
-  service: DummyService;
-  onView: (service: DummyService) => void;
-  onEdit: (service: DummyService) => void;
-  onArchive: (service: DummyService) => void;
-  onRestore: (service: DummyService) => void;
-  onDelete: (service: DummyService) => void;
+  service: AdminService;
+  onView: (service: AdminService) => void;
+  onEdit: (service: AdminService) => void;
+  onArchive: (service: AdminService) => void;
+  onRestore: (service: AdminService) => void;
+  onDelete: (service: AdminService) => void;
 }
 
 export function ServiceCard({

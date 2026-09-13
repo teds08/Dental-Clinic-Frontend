@@ -2,11 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-import {
-  dummyServices,
-  type DummyService,
-} from "@/data/admin/services/services";
+import { dummyServices } from "@/data/admin/services/services";
+import type { AdminService } from "@/types/admin/services";
 
+import type { ServiceFormData } from "./ServiceFormDialog";
 import { ServiceFilters } from "./ServiceFilters";
 import { ServiceGrid } from "./ServiceGrid";
 import { ServicesPageHeader } from "./ServicesPageHeader";
@@ -19,15 +18,18 @@ export function ServicesPage() {
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("newest");
 
-  const [selectedService, setSelectedService] = useState<DummyService | null>(
-    null,
-  );
-  const [isServiceFormOpen, setIsServiceFormOpen] = useState(false);
-  const [editingService, setEditingService] = useState<DummyService | null>(
+  const [selectedService, setSelectedService] = useState<AdminService | null>(
     null,
   );
 
-  const [actionService, setActionService] = useState<DummyService | null>(null);
+  const [isServiceFormOpen, setIsServiceFormOpen] = useState(false);
+
+  const [editingService, setEditingService] = useState<AdminService | null>(
+    null,
+  );
+
+  const [actionService, setActionService] = useState<AdminService | null>(null);
+
   const [action, setAction] = useState<"archive" | "restore" | "delete" | null>(
     null,
   );
@@ -50,7 +52,7 @@ export function ServicesPage() {
       switch (sort) {
         case "oldest":
           return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
 
         case "name-asc":
@@ -60,41 +62,41 @@ export function ServicesPage() {
           return b.title.localeCompare(a.title);
 
         case "price-asc":
-          return a.price - b.price;
+          return Number(a.price) - Number(b.price);
 
         case "price-desc":
-          return b.price - a.price;
+          return Number(b.price) - Number(a.price);
 
         case "newest":
         default:
           return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
           );
       }
     });
   }, [search, status, sort]);
 
-  function handleView(service: DummyService) {
+  function handleView(service: AdminService) {
     setSelectedService(service);
   }
 
-  function handleEdit(service: DummyService) {
+  function handleEdit(service: AdminService) {
     setSelectedService(null);
     setEditingService(service);
     setIsServiceFormOpen(true);
   }
 
-  function handleArchive(service: DummyService) {
+  function handleArchive(service: AdminService) {
     setActionService(service);
     setAction("archive");
   }
 
-  function handleRestore(service: DummyService) {
+  function handleRestore(service: AdminService) {
     setActionService(service);
     setAction("restore");
   }
 
-  function handleDelete(service: DummyService) {
+  function handleDelete(service: AdminService) {
     setActionService(service);
     setAction("delete");
   }
@@ -114,9 +116,26 @@ export function ServicesPage() {
     handleCloseAction();
   }
 
+  function handleServiceSubmit(formData: ServiceFormData) {
+    console.log("Service form submitted:", formData);
+
+    /*
+     * Add Service API will be connected
+     * in the next feature.
+     *
+     * For now, we only receive and inspect
+     * the form data.
+     */
+  }
+
   return (
     <section>
-      <ServicesPageHeader onAddService={() => setIsServiceFormOpen(true)} />
+      <ServicesPageHeader
+        onAddService={() => {
+          setEditingService(null);
+          setIsServiceFormOpen(true);
+        }}
+      />
 
       <ServiceFilters
         search={search}
@@ -159,6 +178,8 @@ export function ServicesPage() {
           </p>
         </div>
       )}
+
+      {/* Service Action Dialog */}
       <ServiceActionDialog
         service={actionService}
         action={action}
@@ -166,6 +187,8 @@ export function ServicesPage() {
         onClose={handleCloseAction}
         onConfirm={handleConfirmAction}
       />
+
+      {/* Service Details Dialog */}
       <ServiceDetailsDialog
         service={selectedService}
         isOpen={selectedService !== null}
@@ -173,6 +196,7 @@ export function ServicesPage() {
         onEdit={handleEdit}
       />
 
+      {/* Add / Edit Service Dialog */}
       <ServiceFormDialog
         key={editingService?.id ?? "new"}
         isOpen={isServiceFormOpen}
@@ -181,9 +205,7 @@ export function ServicesPage() {
           setIsServiceFormOpen(false);
           setEditingService(null);
         }}
-        onSubmit={(service) => {
-          console.log("Submitted service:", service);
-        }}
+        onSubmit={handleServiceSubmit}
       />
     </section>
   );

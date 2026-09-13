@@ -1,14 +1,14 @@
-import type { DummyService } from "@/data/admin/services/services";
+import type { AdminService } from "@/types/admin/services";
 
 import { ServiceCard } from "./ServiceCard";
 
 interface ServiceGridProps {
-  services: DummyService[];
-  onView: (service: DummyService) => void;
-  onEdit: (service: DummyService) => void;
-  onArchive: (service: DummyService) => void;
-  onRestore: (service: DummyService) => void;
-  onDelete: (service: DummyService) => void;
+  services: AdminService[];
+  onView: (service: AdminService) => void;
+  onEdit: (service: AdminService) => void;
+  onArchive: (service: AdminService) => void;
+  onRestore: (service: AdminService) => void;
+  onDelete: (service: AdminService) => void;
 }
 
 export function ServiceGrid({

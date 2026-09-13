@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { Pencil, X } from "lucide-react";
 
-import type { DummyService } from "@/data/admin/services/services";
+import type { AdminService } from "@/types/admin/services";
 
 interface ServiceDetailsDialogProps {
-  service: DummyService | null;
+  service: AdminService | null;
   isOpen: boolean;
   onClose: () => void;
-  onEdit: (service: DummyService) => void;
+  onEdit: (service: AdminService) => void;
 }
 
 export function ServiceDetailsDialog({
@@ -104,7 +104,7 @@ export function ServiceDetailsDialog({
             </p>
 
             <p className="mt-1.5 text-sm text-gray-600">
-              {new Date(service.createdAt).toLocaleDateString("en-PH", {
+              {new Date(service.created_at).toLocaleDateString("en-PH", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
