@@ -1,9 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { LogOut, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
 
+import { LogoutDialog } from "@/components/auth/LogoutDialog";
+import { removeAuthToken } from "@/lib/api/auth";
 import { adminNavigation } from "@/data/admin/dashboard/navigation";
 
 interface AdminSidebarProps {
@@ -13,6 +16,19 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  function handleLogout() {
+    setIsLoggingOut(true);
+
+    removeAuthToken();
+
+    router.replace("/login");
+  }
 
   return (
     <>
@@ -33,7 +49,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         }`}
       >
         {/* Brand */}
-        <div className="flex h-16 shrink-0 items-center justify-between border-b border-gray-100 px-5">
+        <div className="flex h-20 shrink-0 items-center justify-between border-b border-gray-100 px-5">
           <Link
             href="/admin/dashboard"
             onClick={onClose}
@@ -59,7 +75,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             type="button"
             onClick={onClose}
             aria-label="Close sidebar"
-            className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 lg:hidden"
           >
             <X size={19} strokeWidth={1.8} />
           </button>
@@ -74,7 +90,6 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           <div className="space-y-1">
             {adminNavigation.map((item) => {
               const Icon = item.icon;
-
               const isActive = pathname === item.href;
 
               return (
@@ -97,8 +112,9 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
         </nav>
 
-        {/* Footer */}
+        {/* Sidebar Footer */}
         <div className="shrink-0 border-t border-gray-100 p-4">
+          {/* Clinic Information */}
           <div className="rounded-xl bg-gray-50 px-3 py-3">
             <p className="text-xs font-semibold text-gray-700">
               RAFE Dental Clinic
@@ -108,8 +124,31 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               Administration Portal
             </p>
           </div>
+
+          {/* Logout */}
+          <button
+            type="button"
+            onClick={() => setIsLogoutDialogOpen(true)}
+            className="cursor-pointer mt-3 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+          >
+            <LogOut size={18} strokeWidth={1.8} />
+
+            <span>Log out</span>
+          </button>
         </div>
       </aside>
+
+      {/* Logout Confirmation */}
+      <LogoutDialog
+        isOpen={isLogoutDialogOpen}
+        isLoading={isLoggingOut}
+        onCancel={() => {
+          if (!isLoggingOut) {
+            setIsLogoutDialogOpen(false);
+          }
+        }}
+        onConfirm={handleLogout}
+      />
     </>
   );
 }

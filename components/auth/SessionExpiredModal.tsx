@@ -44,7 +44,7 @@ export function SessionExpiredModal({
         <button
           type="button"
           onClick={onLogin}
-          className="mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-teal-800"
+          className="cursor-pointer mt-6 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-teal-800"
         >
           <LogIn size={17} strokeWidth={2} />
           Log in again

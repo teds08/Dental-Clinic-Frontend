@@ -1,31 +1,67 @@
-import { Bell, ChevronDown } from "lucide-react";
+"use client";
 
-export function AdminHeader() {
+import { ChevronDown } from "lucide-react";
+
+import { AdminNotificationDropdown } from "./AdminNotificationDropdown";
+
+import type { AdminNotification } from "@/types/admin/notifications";
+
+interface AdminHeaderProps {
+  pageTitle?: string;
+  notifications: AdminNotification[];
+  unreadCount: number;
+  isOpen: boolean;
+  isLoading: boolean;
+  isActionLoading: boolean;
+  error: string;
+  onToggle: () => void;
+  onClose: () => void;
+  onMarkAsRead: (notificationId: number) => void;
+  onMarkAllAsRead: () => void;
+  onDelete: (notificationId: number) => void;
+}
+
+export function AdminHeader({
+  pageTitle = "Dashboard",
+  notifications,
+  unreadCount,
+  isOpen,
+  isLoading,
+  isActionLoading,
+  error,
+  onToggle,
+  onClose,
+  onMarkAsRead,
+  onMarkAllAsRead,
+  onDelete,
+}: AdminHeaderProps) {
   return (
     <header className="hidden h-20 items-center justify-between border-b border-gray-200 bg-white px-8 lg:flex">
-      {/* Left */}
+      {/* Page Title */}
       <div>
         <p className="text-xs font-medium text-gray-400">Admin Portal</p>
 
         <h1 className="mt-1 text-xl font-bold tracking-tight text-gray-900">
-          Dashboard
+          {pageTitle}
         </h1>
       </div>
 
-      {/* Right */}
+      {/* Header Actions */}
       <div className="flex items-center gap-5">
-        {/* Notifications */}
-        <button
-          type="button"
-          aria-label="Notifications"
-          className="relative flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
-        >
-          <Bell size={19} strokeWidth={1.8} />
+        <AdminNotificationDropdown
+          notifications={notifications}
+          unreadCount={unreadCount}
+          isOpen={isOpen}
+          isLoading={isLoading}
+          isActionLoading={isActionLoading}
+          error={error}
+          onToggle={onToggle}
+          onClose={onClose}
+          onMarkAsRead={onMarkAsRead}
+          onMarkAllAsRead={onMarkAllAsRead}
+          onDelete={onDelete}
+        />
 
-          <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-teal-600" />
-        </button>
-
-        {/* Divider */}
         <div className="h-8 w-px bg-gray-200" />
 
         {/* Admin Profile */}

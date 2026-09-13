@@ -201,7 +201,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="flex h-11 w-full items-center justify-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+        className="cursor-pointer flex h-11 w-full items-center justify-center rounded-lg bg-teal-700 px-4 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus:ring-2 focus:ring-teal-600/20 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Logging in..." : "Log in"}
       </button>
