@@ -1,7 +1,7 @@
 "use client";
 
+import { LogOut, Stethoscope, X } from "lucide-react";
 import Link from "next/link";
-import { LogOut, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -9,12 +9,36 @@ import { LogoutDialog } from "@/components/auth/LogoutDialog";
 import { removeAuthToken } from "@/lib/api/auth";
 import { adminNavigation } from "@/data/admin/dashboard/navigation";
 
+import type { AdminProfile } from "@/types/admin/profile";
+
 interface AdminSidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  profile: AdminProfile | null;
+  isProfileLoading: boolean;
 }
 
-export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
+function getInitials(firstName: string, lastName: string) {
+  const firstInitial = firstName.trim().charAt(0);
+  const lastInitial = lastName.trim().charAt(0);
+
+  return `${firstInitial}${lastInitial}`.toUpperCase();
+}
+
+function formatRole(role: string) {
+  if (!role) {
+    return "Administrator";
+  }
+
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
+export function AdminSidebar({
+  isOpen,
+  onClose,
+  profile,
+  isProfileLoading,
+}: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -22,7 +46,32 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  function handleLogout() {
+  const firstName = profile?.first_name ?? "";
+  const lastName = profile?.last_name ?? "";
+
+  const fullName =
+    firstName || lastName ? `${firstName} ${lastName}`.trim() : "Admin";
+
+  const initials =
+    firstName || lastName ? getInitials(firstName, lastName) : "AD";
+
+  const role = profile?.role ? formatRole(profile.role) : "Administrator";
+
+  function handleNavigation() {
+    onClose();
+  }
+
+  function handleOpenLogout() {
+    setIsLogoutDialogOpen(true);
+  }
+
+  function handleCancelLogout() {
+    if (isLoggingOut) return;
+
+    setIsLogoutDialogOpen(false);
+  }
+
+  function handleConfirmLogout() {
     setIsLoggingOut(true);
 
     removeAuthToken();
@@ -38,25 +87,24 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           type="button"
           aria-label="Close sidebar"
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-[1px] lg:hidden"
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-gray-200 bg-white transition-transform duration-300 lg:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         {/* Brand */}
-        <div className="flex h-20 shrink-0 items-center justify-between border-b border-gray-100 px-5">
+        <div className="flex h-20 shrink-0 items-center justify-between border-b border-gray-100 px-6">
           <Link
             href="/admin/dashboard"
-            onClick={onClose}
+            onClick={handleNavigation}
             className="flex items-center gap-3"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-700 text-sm font-bold text-white">
-              R
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-700 text-white">
+              <Stethoscope size={19} strokeWidth={1.8} />
             </div>
 
             <div>
@@ -64,8 +112,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 RAFE Dental
               </p>
 
-              <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
-                Admin Panel
+              <p className="text-[10px] font-medium text-gray-400">
+                Admin Portal
               </p>
             </div>
           </Link>
@@ -82,28 +130,29 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-5">
-          <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+        <nav className="flex-1 overflow-y-auto px-4 py-6">
+          <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400">
             Management
           </p>
 
           <div className="space-y-1">
             {adminNavigation.map((item) => {
               const Icon = item.icon;
+
               const isActive = pathname === item.href;
 
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={onClose}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors ${
+                  onClick={handleNavigation}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-teal-50 text-teal-700"
-                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                      : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
                   }`}
                 >
-                  <Icon size={18} strokeWidth={isActive ? 2 : 1.8} />
+                  <Icon size={18} strokeWidth={1.8} />
 
                   <span>{item.label}</span>
                 </Link>
@@ -112,28 +161,35 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
         </nav>
 
-        {/* Sidebar Footer */}
+        {/* Bottom Section */}
         <div className="shrink-0 border-t border-gray-100 p-4">
-          {/* Clinic Information */}
-          <div className="rounded-xl bg-gray-50 px-3 py-3">
-            <p className="text-xs font-semibold text-gray-700">
-              RAFE Dental Clinic
-            </p>
+          {/* Admin Profile */}
+          <div className="mb-2 rounded-xl bg-gray-50 p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-100 text-sm font-bold uppercase text-teal-700">
+                {isProfileLoading ? "..." : initials}
+              </div>
 
-            <p className="mt-0.5 text-[10px] text-gray-400">
-              Administration Portal
-            </p>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-gray-900">
+                  {isProfileLoading ? "Loading..." : fullName}
+                </p>
+
+                <p className="mt-0.5 truncate text-xs text-gray-400">
+                  {isProfileLoading ? "Loading..." : role}
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Logout */}
           <button
             type="button"
-            onClick={() => setIsLogoutDialogOpen(true)}
-            className="cursor-pointer mt-3 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            onClick={handleOpenLogout}
+            className="cursor-pointer flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
           >
             <LogOut size={18} strokeWidth={1.8} />
-
-            <span>Log out</span>
+            Log out
           </button>
         </div>
       </aside>
@@ -142,12 +198,8 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       <LogoutDialog
         isOpen={isLogoutDialogOpen}
         isLoading={isLoggingOut}
-        onCancel={() => {
-          if (!isLoggingOut) {
-            setIsLogoutDialogOpen(false);
-          }
-        }}
-        onConfirm={handleLogout}
+        onCancel={handleCancelLogout}
+        onConfirm={handleConfirmLogout}
       />
     </>
   );

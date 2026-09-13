@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import { SessionExpiredHandler } from "@/components/auth/SessionExpiredHandler";
 import { useAdminNotifications } from "@/hooks/admin/useAdminNotifications";
+import { useAdminProfile } from "@/hooks/admin/useAdminProfile";
 
 import { AdminHeader } from "./AdminHeader";
 import { AdminNotificationDropdown } from "./AdminNotificationDropdown";
@@ -63,6 +64,8 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
     removeNotification,
   } = useAdminNotifications();
 
+  const { profile, isLoading: isProfileLoading } = useAdminProfile();
+
   const notificationProps = {
     notifications,
     unreadCount,
@@ -84,6 +87,8 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
       <AdminSidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        profile={profile}
+        isProfileLoading={isProfileLoading}
       />
 
       <div className="min-h-screen lg:pl-64">
@@ -114,6 +119,9 @@ export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
 
         {/* Desktop Header */}
         <AdminHeader
+          pageTitle={pageTitle}
+          profile={profile}
+          isProfileLoading={isProfileLoading}
           notifications={notifications}
           unreadCount={unreadCount}
           isOpen={isOpen}
