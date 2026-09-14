@@ -21,10 +21,11 @@ export function ServiceGrid({
 }: ServiceGridProps) {
   return (
     <div className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-      {services.map((service) => (
+      {services.map((service, index) => (
         <ServiceCard
           key={service.id}
           service={service}
+          priority={index === 0}
           onView={onView}
           onEdit={onEdit}
           onArchive={onArchive}

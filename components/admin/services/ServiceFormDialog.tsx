@@ -4,6 +4,8 @@ import Image from "next/image";
 import { ImagePlus, X } from "lucide-react";
 import { useState } from "react";
 
+import { createService, updateService } from "@/lib/api/admin/services";
+
 import {
   serviceCategories,
   serviceDurations,
@@ -32,7 +34,7 @@ interface ServiceFormDialogProps {
   isOpen: boolean;
   service?: AdminService | null;
   onClose: () => void;
-  onSubmit?: (data: ServiceFormData) => void;
+  onSubmit?: (data: ServiceFormData) => void | Promise<void>;
 }
 
 export function ServiceFormDialog({
@@ -67,6 +69,8 @@ export function ServiceFormDialog({
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   if (!isOpen) {
     return null;
   }
@@ -91,7 +95,7 @@ export function ServiceFormDialog({
   }
 
   function validateForm() {
-    if (!imageFile) {
+    if (!service && !imageFile) {
       return "Please upload a service image.";
     }
 
@@ -126,7 +130,74 @@ export function ServiceFormDialog({
     return null;
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function buildCreateFormData() {
+    if (!imageFile) {
+      return null;
+    }
+
+    const formData = new FormData();
+
+    formData.append("image", imageFile);
+    formData.append("title", title.trim());
+    formData.append("description", description.trim());
+    formData.append("price", price);
+    formData.append("points", points);
+    formData.append("duration_minutes", durationMinutes);
+    formData.append("icon", selectedIcon);
+    formData.append("category", category);
+
+    return formData;
+  }
+
+  function buildUpdateFormData() {
+    if (!service) {
+      return null;
+    }
+
+    const formData = new FormData();
+
+    const currentTitle = title.trim();
+    const currentDescription = description.trim();
+    const currentPrice = price;
+    const currentPoints = Number(points);
+    const currentDuration = Number(durationMinutes);
+
+    if (currentTitle !== service.title) {
+      formData.append("title", currentTitle);
+    }
+
+    if (currentDescription !== service.description) {
+      formData.append("description", currentDescription);
+    }
+
+    if (currentPrice !== service.price) {
+      formData.append("price", currentPrice);
+    }
+
+    if (currentPoints !== service.points) {
+      formData.append("points", String(currentPoints));
+    }
+
+    if (currentDuration !== service.duration_minutes) {
+      formData.append("duration_minutes", String(currentDuration));
+    }
+
+    if (category !== service.category) {
+      formData.append("category", category);
+    }
+
+    if (selectedIcon !== service.icon) {
+      formData.append("icon", selectedIcon);
+    }
+
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    return formData;
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setErrorMessage("");
@@ -138,26 +209,88 @@ export function ServiceFormDialog({
       return;
     }
 
-    const formData: ServiceFormData = {
-      title: title.trim(),
-      description: description.trim(),
-      price,
-      points,
-      duration_minutes: Number(durationMinutes),
-      category,
-      icon: selectedIcon,
-      imageFile,
-      imagePreview,
-    };
+    try {
+      setIsSubmitting(true);
 
-    console.log("Service form data:", formData);
+      if (service) {
+        const formData = buildUpdateFormData();
 
-    onSubmit?.(formData);
+        if (!formData) {
+          throw new Error("Unable to prepare service update.");
+        }
 
-    handleClose();
+        if ([...formData.keys()].length === 0) {
+          setErrorMessage("No changes were made to the service.");
+          return;
+        }
+
+        const response = await updateService(service.id, formData);
+
+        console.log("Service updated:", response);
+
+        const submittedData: ServiceFormData = {
+          title: title.trim(),
+          description: description.trim(),
+          price,
+          points,
+          duration_minutes: Number(durationMinutes),
+          category,
+          icon: selectedIcon,
+          imageFile,
+          imagePreview: response.service.image,
+        };
+
+        await onSubmit?.(submittedData);
+
+        handleClose();
+
+        return;
+      }
+
+      const formData = buildCreateFormData();
+
+      if (!formData) {
+        setErrorMessage("Please upload a service image.");
+        return;
+      }
+
+      const response = await createService(formData);
+
+      console.log("Service created:", response);
+
+      const submittedData: ServiceFormData = {
+        title: title.trim(),
+        description: description.trim(),
+        price,
+        points,
+        duration_minutes: Number(durationMinutes),
+        category,
+        icon: selectedIcon,
+        imageFile,
+        imagePreview: response.service.image,
+      };
+
+      await onSubmit?.(submittedData);
+
+      handleClose();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : service
+            ? "Failed to update service."
+            : "Failed to create service.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function handleClose() {
+    if (isSubmitting) {
+      return;
+    }
+
     setTitle("");
     setDescription("");
     setPrice("");
@@ -168,6 +301,7 @@ export function ServiceFormDialog({
     setImageFile(null);
     setImagePreview("");
     setErrorMessage("");
+    setIsSubmitting(false);
 
     onClose();
   }
@@ -186,19 +320,22 @@ export function ServiceFormDialog({
         <div className="flex items-start justify-between border-b border-gray-100 px-5 py-4 sm:px-6">
           <div>
             <h2 className="text-base font-semibold text-gray-900">
-              Add Service
+              {service ? "Edit Service" : "Add Service"}
             </h2>
 
             <p className="mt-1 text-xs text-gray-500">
-              Add a new dental service to the clinic.
+              {service
+                ? "Update the dental service information."
+                : "Add a new dental service to the clinic."}
             </p>
           </div>
 
           <button
             type="button"
             onClick={handleClose}
+            disabled={isSubmitting}
             aria-label="Close dialog"
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <X size={18} />
           </button>
@@ -243,6 +380,7 @@ export function ServiceFormDialog({
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
                   onChange={handleImageChange}
+                  disabled={isSubmitting}
                   className="sr-only"
                 />
               </label>
@@ -263,7 +401,8 @@ export function ServiceFormDialog({
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
                 placeholder="e.g. Dental Cleaning"
-                className="mt-2 h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50"
+                disabled={isSubmitting}
+                className="mt-2 h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
               />
             </div>
 
@@ -282,13 +421,13 @@ export function ServiceFormDialog({
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="Describe the service..."
                 rows={4}
-                className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 text-sm leading-6 text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50"
+                disabled={isSubmitting}
+                className="mt-2 w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 text-sm leading-6 text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
               />
             </div>
 
             {/* Price + Points */}
             <div className="grid gap-4 sm:grid-cols-2">
-              {/* Price */}
               <div>
                 <label
                   htmlFor="service-price"
@@ -310,12 +449,12 @@ export function ServiceFormDialog({
                     value={price}
                     onChange={(event) => setPrice(event.target.value)}
                     placeholder="0.00"
-                    className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50 pl-8 pr-3.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50"
+                    disabled={isSubmitting}
+                    className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50 pl-8 pr-3.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
                   />
                 </div>
               </div>
 
-              {/* Points */}
               <div>
                 <label
                   htmlFor="service-points"
@@ -332,14 +471,14 @@ export function ServiceFormDialog({
                   value={points}
                   onChange={(event) => setPoints(event.target.value)}
                   placeholder="e.g. 30"
-                  className="mt-2 h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50"
+                  disabled={isSubmitting}
+                  className="mt-2 h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
                 />
               </div>
             </div>
 
             {/* Duration + Category */}
             <div className="grid gap-4 sm:grid-cols-2">
-              {/* Duration */}
               <div>
                 <label
                   htmlFor="service-duration"
@@ -352,7 +491,8 @@ export function ServiceFormDialog({
                   id="service-duration"
                   value={durationMinutes}
                   onChange={(event) => setDurationMinutes(event.target.value)}
-                  className="mt-2 h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-700 outline-none transition-colors focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50"
+                  disabled={isSubmitting}
+                  className="mt-2 h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-700 outline-none transition-colors focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {serviceDurations.map((duration) => (
                     <option key={duration.value} value={duration.value}>
@@ -362,7 +502,6 @@ export function ServiceFormDialog({
                 </select>
               </div>
 
-              {/* Category */}
               <div>
                 <label
                   htmlFor="service-category"
@@ -377,7 +516,8 @@ export function ServiceFormDialog({
                   onChange={(event) =>
                     setCategory(event.target.value as ServiceCategory)
                   }
-                  className="mt-2 h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-700 outline-none transition-colors focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50"
+                  disabled={isSubmitting}
+                  className="mt-2 h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-700 outline-none transition-colors focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {serviceCategories.map((serviceCategory) => (
                     <option key={serviceCategory} value={serviceCategory}>
@@ -410,7 +550,8 @@ export function ServiceFormDialog({
                       type="button"
                       title={serviceIcon.label}
                       onClick={() => setSelectedIcon(serviceIcon.value)}
-                      className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border transition-all duration-200 ${
+                      disabled={isSubmitting}
+                      className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
                         isSelected
                           ? "border-teal-300 bg-teal-50 text-teal-700 ring-2 ring-teal-100"
                           : "border-gray-200 bg-white text-gray-400 hover:border-teal-200 hover:bg-teal-50/50 hover:text-teal-700"
@@ -440,16 +581,24 @@ export function ServiceFormDialog({
             <button
               type="button"
               onClick={handleClose}
-              className="h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 sm:w-auto"
+              disabled={isSubmitting}
+              className="h-10 w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              className="h-10 w-full cursor-pointer rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white transition-colors hover:bg-teal-800 sm:w-auto"
+              disabled={isSubmitting}
+              className="h-10 w-full cursor-pointer rounded-xl bg-teal-700 px-5 text-sm font-semibold text-white transition-colors hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
             >
-              Add Service
+              {isSubmitting
+                ? service
+                  ? "Updating..."
+                  : "Creating..."
+                : service
+                  ? "Update Service"
+                  : "Add Service"}
             </button>
           </div>
         </form>

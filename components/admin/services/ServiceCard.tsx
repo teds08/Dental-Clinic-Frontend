@@ -8,6 +8,7 @@ import type { AdminService } from "@/types/admin/services";
 
 interface ServiceCardProps {
   service: AdminService;
+  priority?: boolean;
   onView: (service: AdminService) => void;
   onEdit: (service: AdminService) => void;
   onArchive: (service: AdminService) => void;
@@ -17,6 +18,7 @@ interface ServiceCardProps {
 
 export function ServiceCard({
   service,
+  priority = false,
   onView,
   onEdit,
   onArchive,
@@ -35,6 +37,7 @@ export function ServiceCard({
           src={service.image}
           alt={service.title}
           fill
+          priority={priority}
           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
