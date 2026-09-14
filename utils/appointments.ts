@@ -38,3 +38,26 @@ export function getStatusClasses(status: string) {
       return "bg-gray-100 text-gray-500";
   }
 }
+
+export function formatAppointmentTime(time: string): string {
+  const [hoursString, minutesString] = time.split(":");
+
+  const hours = Number(hoursString);
+  const minutes = Number(minutesString);
+
+  if (
+    Number.isNaN(hours) ||
+    Number.isNaN(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  ) {
+    return time;
+  }
+
+  const period = hours >= 12 ? "PM" : "AM";
+  const formattedHours = hours % 12 || 12;
+
+  return `${formattedHours}:${String(minutes).padStart(2, "0")} ${period}`;
+}

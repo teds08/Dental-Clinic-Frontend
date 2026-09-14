@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { CalendarDays, Check, Clock3, MoreHorizontal, X } from "lucide-react";
 
 import {
@@ -13,6 +12,7 @@ import type { AdminDashboardAppointment } from "@/types/admin/dashboard";
 
 import {
   formatAppointmentDate,
+  formatAppointmentTime,
   formatStatus,
   getInitials,
   getStatusClasses,
@@ -131,7 +131,7 @@ export function AppointmentRow({
             <div className="mt-1 flex items-center gap-2 text-xs text-gray-400">
               <Clock3 size={14} strokeWidth={1.8} className="text-gray-300" />
 
-              <span>{appointment.appointment_time}</span>
+              <span>{formatAppointmentTime(appointment.appointment_time)}</span>
             </div>
           </div>
 

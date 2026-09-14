@@ -22,6 +22,8 @@ import { ServiceActionDialog } from "./ServiceActionDialog";
 
 export function ServicesPage() {
   const [activeServices, setActiveServices] = useState<AdminService[]>([]);
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
 
   const [archivedServices, setArchivedServices] = useState<AdminService[]>([]);
 
@@ -43,6 +45,7 @@ export function ServicesPage() {
   );
 
   const [actionService, setActionService] = useState<AdminService | null>(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
 
   const [action, setAction] = useState<"archive" | "restore" | "delete" | null>(
     null,
@@ -194,16 +197,22 @@ export function ServicesPage() {
   }
 
   function handleArchive(service: AdminService) {
+    setActionError("");
+    setActionSuccess("");
     setActionService(service);
     setAction("archive");
   }
 
   function handleRestore(service: AdminService) {
+    setActionError("");
+    setActionSuccess("");
     setActionService(service);
     setAction("restore");
   }
 
   function handleDelete(service: AdminService) {
+    setActionError("");
+    setActionSuccess("");
     setActionService(service);
     setAction("delete");
   }
@@ -211,35 +220,55 @@ export function ServicesPage() {
   function handleCloseAction() {
     setActionService(null);
     setAction(null);
+    setActionError("");
+    setActionSuccess("");
   }
 
   async function handleConfirmAction() {
-    if (!actionService || !action) {
+    if (!actionService || !action || isActionLoading) {
       return;
     }
 
+    const serviceId = actionService.id;
+
+    setActionError("");
+    setActionSuccess("");
+    setIsActionLoading(true);
+
     try {
       if (action === "archive") {
-        await archiveService(actionService.id);
+        await archiveService(serviceId);
       }
 
       if (action === "restore") {
-        await restoreService(actionService.id);
+        await restoreService(serviceId);
       }
 
       if (action === "delete") {
-        await deleteService(actionService.id);
+        await deleteService(serviceId);
+        await loadServices();
+
+        setActionSuccess("Service permanently deleted successfully.");
+        return;
       }
 
       handleCloseAction();
-
       await loadServices();
     } catch (error) {
+      if (error instanceof Error && "status" in error && error.status === 409) {
+        setActionError(error.message);
+        return;
+      }
+
       console.error("Service action failed:", error);
 
-      setErrorMessage(
-        error instanceof Error ? error.message : "Service action failed.",
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while processing this action. Please try again.",
       );
+    } finally {
+      setIsActionLoading(false);
     }
   }
 
@@ -327,6 +356,9 @@ export function ServicesPage() {
         service={actionService}
         action={action}
         isOpen={actionService !== null && action !== null}
+        isLoading={isActionLoading}
+        errorMessage={actionError}
+        successMessage={actionSuccess}
         onClose={handleCloseAction}
         onConfirm={handleConfirmAction}
       />

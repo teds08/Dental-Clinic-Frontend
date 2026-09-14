@@ -14,6 +14,7 @@ import type { AdminAppointmentDetails } from "@/types/admin/appointments";
 
 import {
   formatAppointmentDate,
+  formatAppointmentTime,
   formatStatus,
   getStatusClasses,
 } from "@/utils/appointments";
@@ -193,7 +194,7 @@ export function AppointmentDetailsDialog({
                   </div>
 
                   <p className="mt-2 text-sm font-semibold text-gray-900">
-                    {appointment.appointment_time}
+                    {formatAppointmentTime(appointment.appointment_time)}
                   </p>
                 </div>
 

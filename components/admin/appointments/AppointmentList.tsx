@@ -12,6 +12,7 @@ import type { AdminAppointment } from "@/types/admin/appointments";
 
 import {
   formatAppointmentDate,
+  formatAppointmentTime,
   formatStatus,
   getInitials,
   getStatusClasses,
@@ -215,7 +216,9 @@ export function AppointmentList({
                     className="shrink-0 text-gray-400"
                   />
 
-                  <span>{appointment.appointment_time}</span>
+                  <span>
+                    {formatAppointmentTime(appointment.appointment_time)}
+                  </span>
                 </div>
 
                 {/* Status */}
@@ -407,7 +410,7 @@ export function AppointmentList({
                           className="text-gray-400"
                         />
 
-                        {appointment.appointment_time}
+                        {formatAppointmentTime(appointment.appointment_time)}
                       </span>
 
                       <span className="font-medium text-gray-600">

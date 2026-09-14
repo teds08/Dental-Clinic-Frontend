@@ -103,11 +103,51 @@ export async function deleteService(
     method: "DELETE",
   });
 
-  const data = await response.json();
+  const contentType = response.headers.get("content-type");
+  const responseText = await response.text();
 
-  if (!response.ok) {
-    throw new Error(data?.message ?? "Failed to permanently delete service.");
+  let data: unknown = null;
+
+  if (contentType?.includes("application/json")) {
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      throw new Error("Invalid JSON response from delete service API.");
+    }
   }
 
-  return data;
+  if (!response.ok) {
+    let message = `Failed to permanently delete service (${response.status}).`;
+
+    if (
+      typeof data === "object" &&
+      data !== null &&
+      "message" in data &&
+      typeof data.message === "string"
+    ) {
+      message = data.message;
+    }
+
+    const error = new Error(message);
+
+    Object.assign(error, {
+      status: response.status,
+    });
+
+    throw error;
+  }
+
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !("message" in data) ||
+    !("service" in data)
+  ) {
+    throw new Error("Invalid response from delete service API.");
+  }
+
+  return data as {
+    message: string;
+    service: AdminService;
+  };
 }

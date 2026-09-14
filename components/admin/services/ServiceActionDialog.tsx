@@ -10,6 +10,8 @@ interface ServiceActionDialogProps {
   action: ServiceAction | null;
   isOpen: boolean;
   isLoading?: boolean;
+  errorMessage?: string;
+  successMessage?: string;
   onClose: () => void;
   onConfirm: () => void;
 }
@@ -51,6 +53,8 @@ export function ServiceActionDialog({
   action,
   isOpen,
   isLoading = false,
+  errorMessage,
+  successMessage,
   onClose,
   onConfirm,
 }: ServiceActionDialogProps) {
@@ -125,9 +129,15 @@ export function ServiceActionDialog({
               </p>
             </div>
           )}
+
+          {/* Error */}
+          {errorMessage && (
+            <div className="mt-4 rounded-xl border border-red-100 bg-red-50 px-4 py-3">
+              <p className="text-xs leading-5 text-red-600">{errorMessage}</p>
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
         <div className="flex gap-3 border-t border-gray-100 px-5 py-4 sm:px-6">
           <button
             type="button"
@@ -135,17 +145,19 @@ export function ServiceActionDialog({
             disabled={isLoading}
             className="h-10 flex-1 cursor-pointer rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Cancel
+            {successMessage ? "Close" : "Cancel"}
           </button>
 
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={isLoading}
-            className={`h-10 flex-1 cursor-pointer rounded-xl px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${config.buttonClassName}`}
-          >
-            {isLoading ? "Processing..." : config.button}
-          </button>
+          {!successMessage && (
+            <button
+              type="button"
+              onClick={onConfirm}
+              disabled={isLoading}
+              className={`h-10 flex-1 cursor-pointer rounded-xl px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${config.buttonClassName}`}
+            >
+              {isLoading ? "Processing..." : config.button}
+            </button>
+          )}
         </div>
       </div>
     </div>
