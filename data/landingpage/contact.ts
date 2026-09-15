@@ -19,6 +19,6 @@ export const contactInformation = [
   {
     icon: Clock3,
     title: "Clinic Hours",
-    value: "Mon - Sat, 1:00 AM - 8:00 PM",
+    value: "Mon - Sat, 1:00 PM - 8:00 PM",
   },
 ];

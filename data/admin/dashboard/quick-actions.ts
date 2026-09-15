@@ -8,8 +8,8 @@ export const adminQuickActions = [
     icon: UserPlus,
   },
   {
-    title: "Add Appointment",
-    description: "Schedule a patient appointment",
+    title: "View Appointment",
+    description: "Show patient appointment",
     href: "/admin/appointments",
     icon: CalendarPlus,
   },
