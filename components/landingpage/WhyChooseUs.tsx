@@ -2,7 +2,7 @@ import { whyChooseUsItems } from "@/data/landingpage/why-choose-us";
 
 export function WhyChooseUs() {
   return (
-    <section className="section-pattern section-pattern-glow bg-gray-50 px-6 py-20 lg:px-8 lg:py-24">
+    <section className="bg-gray-50 px-6 py-20 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="mx-auto max-w-2xl text-center">

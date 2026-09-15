@@ -6,7 +6,6 @@ import { WhyChooseUs } from "@/components/landingpage/WhyChooseUs";
 import { Testimonials } from "@/components/landingpage/Testimonials";
 import { Contact } from "@/components/landingpage/Contact";
 import { Footer } from "@/components/landingpage/Footer";
-import { MeetOurDentist } from "@/components/landingpage/MeetOurDentist";
 
 export default function Home() {
   return (
@@ -14,7 +13,6 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Services />
-      <MeetOurDentist />
       <About />
       <WhyChooseUs />
       <Testimonials />
