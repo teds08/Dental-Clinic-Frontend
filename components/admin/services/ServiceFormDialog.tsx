@@ -60,7 +60,7 @@ export function ServiceFormDialog({
   );
 
   const [selectedIcon, setSelectedIcon] = useState<ServiceIcon>(
-    service?.icon ?? "toothbrush",
+    service?.icon ?? "dental-care",
   );
 
   const [imagePreview, setImagePreview] = useState(service?.image ?? "");
@@ -297,7 +297,7 @@ export function ServiceFormDialog({
     setPoints("");
     setDurationMinutes("60");
     setCategory("Preventive");
-    setSelectedIcon("toothbrush");
+    setSelectedIcon("dental-care");
     setImageFile(null);
     setImagePreview("");
     setErrorMessage("");
@@ -540,8 +540,6 @@ export function ServiceFormDialog({
 
               <div className="mt-3 grid grid-cols-5 gap-2">
                 {serviceIcons.map((serviceIcon) => {
-                  const Icon = serviceIcon.icon;
-
                   const isSelected = selectedIcon === serviceIcon.value;
 
                   return (
@@ -549,17 +547,29 @@ export function ServiceFormDialog({
                       key={serviceIcon.value}
                       type="button"
                       title={serviceIcon.label}
+                      aria-label={`Select ${serviceIcon.label} icon`}
+                      aria-pressed={isSelected}
                       onClick={() => setSelectedIcon(serviceIcon.value)}
                       disabled={isSubmitting}
                       className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-60 ${
                         isSelected
-                          ? "border-teal-300 bg-teal-50 text-teal-700 ring-2 ring-teal-100"
-                          : "border-gray-200 bg-white text-gray-400 hover:border-teal-200 hover:bg-teal-50/50 hover:text-teal-700"
+                          ? "border-teal-300 bg-teal-50 ring-2 ring-teal-100"
+                          : "border-gray-200 bg-white hover:border-teal-200 hover:bg-teal-50/50"
                       }`}
                     >
-                      <Icon size={21} strokeWidth={1.8} />
+                      <Image
+                        src={serviceIcon.src}
+                        alt={serviceIcon.label}
+                        width={40}
+                        height={40}
+                        className="h-10 w-auto object-contain"
+                      />
 
-                      <span className="mt-1 hidden text-[9px] font-medium sm:block">
+                      <span
+                        className={`mt-1 hidden text-[9px] font-medium sm:block ${
+                          isSelected ? "text-teal-700" : "text-gray-500"
+                        }`}
+                      >
                         {serviceIcon.label}
                       </span>
                     </button>

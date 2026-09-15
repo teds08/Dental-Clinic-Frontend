@@ -1,17 +1,3 @@
-import {
-  Circle,
-  HeartPulse,
-  ScanLine,
-  ShieldCheck,
-  Smile,
-  Sparkles,
-  Stethoscope,
-  Syringe,
-  Toothbrush,
-  WandSparkles,
-} from "lucide-react";
-
-import type { LucideIcon } from "lucide-react";
 import type { ServiceCategory, ServiceIcon } from "@/types/admin/services";
 
 export const serviceStatusFilters = [
@@ -44,83 +30,68 @@ export interface ServiceDuration {
 }
 
 export const serviceDurations: ServiceDuration[] = [
-  {
-    label: "30 minutes",
-    value: 30,
-  },
-  {
-    label: "45 minutes",
-    value: 45,
-  },
-  {
-    label: "60 minutes",
-    value: 60,
-  },
-  {
-    label: "90 minutes",
-    value: 90,
-  },
-  {
-    label: "120 minutes",
-    value: 120,
-  },
+  { label: "30 minutes", value: 30 },
+  { label: "45 minutes", value: 45 },
+  { label: "60 minutes", value: 60 },
+  { label: "90 minutes", value: 90 },
+  { label: "120 minutes", value: 120 },
 ];
 
 export interface ServiceIconOption {
   value: ServiceIcon;
   label: string;
-  icon: LucideIcon;
+  src: string;
 }
 
 export const serviceIcons: ServiceIconOption[] = [
   {
-    value: "toothbrush",
-    label: "Toothbrush",
-    icon: Toothbrush,
+    value: "braces",
+    label: "Braces",
+    src: "/icons/services/braces.png",
   },
   {
-    value: "stethoscope",
-    label: "Stethoscope",
-    icon: Stethoscope,
+    value: "dental-care",
+    label: "Dental Care",
+    src: "/icons/services/dental-care.png",
   },
   {
-    value: "sparkles",
-    label: "Sparkles",
-    icon: Sparkles,
+    value: "dental-crown",
+    label: "Dental Crown",
+    src: "/icons/services/dental-crown.png",
   },
   {
-    value: "heart-pulse",
-    label: "Heart",
-    icon: HeartPulse,
+    value: "dental-veneer",
+    label: "Dental Veneer",
+    src: "/icons/services/dental-veneer.png",
   },
   {
-    value: "shield-check",
-    label: "Shield",
-    icon: ShieldCheck,
+    value: "extraction",
+    label: "Extraction",
+    src: "/icons/services/extraction.png",
   },
   {
-    value: "syringe",
-    label: "Syringe",
-    icon: Syringe,
+    value: "implant",
+    label: "Implant",
+    src: "/icons/services/implant.png",
   },
   {
-    value: "scan",
-    label: "Scan",
-    icon: ScanLine,
+    value: "root-canal",
+    label: "Root Canal",
+    src: "/icons/services/root-canal.png",
   },
   {
-    value: "wand-sparkles",
-    label: "Wand",
-    icon: WandSparkles,
+    value: "teeth-cleaning",
+    label: "Teeth Cleaning",
+    src: "/icons/services/teeth-cleaning.png",
   },
   {
-    value: "smile",
-    label: "Smile",
-    icon: Smile,
+    value: "toothache",
+    label: "Toothache",
+    src: "/icons/services/toothache.png",
   },
   {
-    value: "circle",
-    label: "General",
-    icon: Circle,
+    value: "wisdom",
+    label: "Wisdom Tooth",
+    src: "/icons/services/wisdom.png",
   },
 ];

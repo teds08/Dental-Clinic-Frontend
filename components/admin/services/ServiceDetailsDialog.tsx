@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { Pencil, X } from "lucide-react";
 
+import { serviceIcons } from "@/data/admin/services/services";
+
 import type { AdminService } from "@/types/admin/services";
 
 interface ServiceDetailsDialogProps {
@@ -23,6 +25,10 @@ export function ServiceDetailsDialog({
   }
 
   const isArchived = service.status === "archived";
+
+  const serviceIcon =
+    serviceIcons.find((icon) => icon.value === service.icon) ??
+    serviceIcons.find((icon) => icon.value === "dental-care");
 
   return (
     <div
@@ -67,9 +73,22 @@ export function ServiceDetailsDialog({
               sizes="(max-width: 640px) 100vw, 512px"
               className="object-cover"
             />
+
+            {/* Service Icon */}
+            {serviceIcon && (
+              <div className="absolute bottom-3 left-3 flex h-14 w-14 items-center justify-center rounded-xl border border-white/70 bg-white/95 p-2 shadow-md backdrop-blur-sm">
+                <Image
+                  src={serviceIcon.src}
+                  alt={serviceIcon.label}
+                  width={42}
+                  height={42}
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
+            )}
           </div>
 
-          {/* Status */}
+          {/* Status + Price */}
           <div className="mt-5 flex items-center justify-between">
             <span
               className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${
@@ -82,7 +101,7 @@ export function ServiceDetailsDialog({
             </span>
 
             <p className="text-lg font-bold text-teal-700">
-              ₱{service.price.toLocaleString()}
+              ₱{Number(service.price).toLocaleString()}
             </p>
           </div>
 
@@ -95,6 +114,49 @@ export function ServiceDetailsDialog({
             <p className="mt-2 text-sm leading-7 text-gray-600">
               {service.description}
             </p>
+          </div>
+
+          {/* Service Information */}
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-400">
+                Category
+              </p>
+
+              <p className="mt-1.5 text-sm font-semibold text-gray-700">
+                {service.category}
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-400">
+                Duration
+              </p>
+
+              <p className="mt-1.5 text-sm font-semibold text-gray-700">
+                {service.duration_minutes} minutes
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-400">
+                Points
+              </p>
+
+              <p className="mt-1.5 text-sm font-semibold text-gray-700">
+                {service.points} points
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-gray-50 p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-gray-400">
+                Icon
+              </p>
+
+              <p className="mt-1.5 truncate text-sm font-semibold text-gray-700">
+                {serviceIcon?.label ?? "Dental Care"}
+              </p>
+            </div>
           </div>
 
           {/* Created Date */}

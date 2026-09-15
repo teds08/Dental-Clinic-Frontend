@@ -7,16 +7,16 @@ export type ServiceCategory =
   | "Prosthetic";
 
 export type ServiceIcon =
-  | "toothbrush"
-  | "stethoscope"
-  | "sparkles"
-  | "heart-pulse"
-  | "shield-check"
-  | "syringe"
-  | "scan"
-  | "wand-sparkles"
-  | "smile"
-  | "circle";
+  | "braces"
+  | "dental-care"
+  | "dental-crown"
+  | "dental-veneer"
+  | "extraction"
+  | "implant"
+  | "root-canal"
+  | "teeth-cleaning"
+  | "toothache"
+  | "wisdom";
 
 export type ServiceStatus = "active" | "archived";
 

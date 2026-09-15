@@ -4,6 +4,7 @@ import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
+import { serviceIcons } from "@/data/admin/services/services";
 import type { AdminService } from "@/types/admin/services";
 
 interface ServiceCardProps {
@@ -26,21 +27,40 @@ export function ServiceCard({
   onDelete,
 }: ServiceCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const isArchived = service.status === "archived";
+
+  const fallbackIcon =
+    serviceIcons.find((icon) => icon.value === service.icon)?.src ??
+    "/icons/services/dental-care.png";
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-200 hover:shadow-lg">
       {/* Image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-        <Image
-          src={service.image}
-          alt={service.title}
-          fill
-          priority={priority}
-          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {imageError ? (
+          <div className="flex h-full w-full items-center justify-center bg-gray-50">
+            <Image
+              src={fallbackIcon}
+              alt=""
+              width={96}
+              height={96}
+              priority={priority}
+              className="h-20 w-20 object-contain"
+            />
+          </div>
+        ) : (
+          <Image
+            src={service.image}
+            alt={service.title}
+            fill
+            priority={priority}
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setImageError(true)}
+          />
+        )}
 
         {/* Status */}
         <div className="absolute left-3 top-3">
@@ -140,7 +160,7 @@ export function ServiceCard({
           </h3>
 
           <p className="shrink-0 text-sm font-bold text-teal-700">
-            ₱{service.price.toLocaleString()}
+            ₱{Number(service.price).toLocaleString()}
           </p>
         </div>
 
